@@ -2,16 +2,15 @@ package com.example.crmbtf.service.impl;
 
 import com.example.crmbtf.email.SendEmailTLS;
 import com.example.crmbtf.model.AppointmentToDoctors;
-import com.example.crmbtf.model.TelegramUsers;
 import com.example.crmbtf.model.Doctor;
 import com.example.crmbtf.model.Patient;
+import com.example.crmbtf.model.TelegramUsers;
 import com.example.crmbtf.repository.AppointmentRepository;
 import com.example.crmbtf.repository.DoctorRepository;
 import com.example.crmbtf.repository.PatientRepository;
 import com.example.crmbtf.service.AppointmentService;
 import com.example.crmbtf.telegram.ExecutionContext;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,7 +27,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final PatientRepository patientRepository;
     private final DoctorRepository doctorRepository;
 
-    @Autowired
+
     public AppointmentServiceImpl(AppointmentRepository appointmentRepository, PatientRepository patientRepository, DoctorRepository doctorRepository) {
         this.appointmentRepository = appointmentRepository;
         this.patientRepository = patientRepository;

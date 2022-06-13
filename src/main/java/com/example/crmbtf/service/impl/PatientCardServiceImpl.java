@@ -15,7 +15,7 @@ import java.util.Optional;
 public class PatientCardServiceImpl implements PatientCardService {
     private final PatientCardRepository patientCardRepository;
 
-    @Autowired
+
     public PatientCardServiceImpl(PatientCardRepository patientCardRepository) {
         this.patientCardRepository = patientCardRepository;
     }

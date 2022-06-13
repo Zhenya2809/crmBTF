@@ -17,7 +17,7 @@ import java.util.List;
 public class DoctorServiceImpl implements DoctorService {
     private final DoctorRepository doctorRepository;
 
-    @Autowired
+
     public DoctorServiceImpl(DoctorRepository doctorRepository) {
         this.doctorRepository = doctorRepository;
     }

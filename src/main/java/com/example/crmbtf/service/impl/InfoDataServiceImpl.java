@@ -16,7 +16,7 @@ import java.util.Optional;
 @Configurable
 public class InfoDataServiceImpl implements InfoDataService {
     private final InfoDataRepository infoDataRepository;
-    ;
+
 
     public InfoDataServiceImpl(InfoDataRepository infoDataRepository) {
         this.infoDataRepository = infoDataRepository;

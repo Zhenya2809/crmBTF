@@ -22,7 +22,7 @@ public class PatientServiceImpl implements PatientService {
     private final PatientRepository patientRepository;
     private final PatientCardServiceImpl patientCardService;
 
-    @Autowired
+
     public PatientServiceImpl(PatientRepository patientRepository, PatientCardServiceImpl patientCardService) {
         this.patientRepository = patientRepository;
         this.patientCardService = patientCardService;
