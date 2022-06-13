@@ -1,4 +1,4 @@
-package com.example.crmbtf.dto;
+package com.example.crmbtf.model.dto;
 
 import com.example.crmbtf.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

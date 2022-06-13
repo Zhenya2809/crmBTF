@@ -1,6 +1,6 @@
 package com.example.crmbtf.rest;
 
-import com.example.crmbtf.dto.AuthenticationRequestDto;
+import com.example.crmbtf.model.dto.AuthenticationRequestDto;
 import com.example.crmbtf.model.User;
 import com.example.crmbtf.security.jwt.JwtTokenProvider;
 import com.example.crmbtf.service.UserService;

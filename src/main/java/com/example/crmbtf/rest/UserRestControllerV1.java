@@ -1,6 +1,6 @@
 package com.example.crmbtf.rest;
 
-import com.example.crmbtf.dto.UserDto;
+import com.example.crmbtf.model.dto.UserDto;
 import com.example.crmbtf.model.User;
 import com.example.crmbtf.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
