@@ -16,7 +16,7 @@ public class GetEmailRegistration implements Registration {
             executionContext.getContactKeyboard();
             executionContext.setLocalState("get_email_and_phone_registration");
         } else {
-            executionContext.replyMessage("Email не коректный, введите ещё раз");
+            executionContext.replyMessage("Нажмите кнопку - поделиться номером телефона ⬇️");
         }
 
     }

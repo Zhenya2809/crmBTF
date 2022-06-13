@@ -145,7 +145,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Override
     public List<AppointmentToDoctors> findAllByPatientId(Long id) {
         List<AppointmentToDoctors> result = appointmentRepository.findAllByPatientId(id);
-        log.info("IN findAllPatientId {} appointment found ",result);
+        log.info("IN findAllPatientId {} appointment found ",result.size());
         return result;
     }
 

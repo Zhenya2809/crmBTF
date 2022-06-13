@@ -5,10 +5,12 @@ import com.example.crmbtf.commands.Command;
 import com.example.crmbtf.model.ReplyButton;
 import com.example.crmbtf.model.TelegramUsers;
 import com.example.crmbtf.telegram.ExecutionContext;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Slf4j
 @Component
 public class Beauticians implements Command {
 

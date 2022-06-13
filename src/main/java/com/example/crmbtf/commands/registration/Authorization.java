@@ -4,15 +4,18 @@ package com.example.crmbtf.commands.registration;
 import com.example.crmbtf.commands.Command;
 import com.example.crmbtf.model.TelegramUsers;
 import com.example.crmbtf.telegram.ExecutionContext;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Component
 public class Authorization implements Command {
     @Override
     public void doCommand(ExecutionContext executionContext) {
+
         try {
             String localState = executionContext.getLocalState();
             TelegramUsers authorizationUser = executionContext.getAuthorizationUser();
@@ -41,7 +44,7 @@ public class Authorization implements Command {
 
     @Override
     public boolean shouldRunOnText(String text) {
-        return text.equals("Начнем \uD83D\uDE09");
+        return text.equals("Начнем \uD83D\uDE09")||(text.equals("Главное меню"));
     }
 
     @Override

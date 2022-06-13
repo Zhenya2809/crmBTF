@@ -30,7 +30,7 @@ public class Doctor {
     @Column(name="telegramBotID")
     private String telegramBotID;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "clientID")
     private Set<AppointmentToDoctors> appointmentToDoctors;
 

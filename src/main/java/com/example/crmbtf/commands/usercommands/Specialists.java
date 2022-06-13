@@ -5,18 +5,20 @@ import com.example.crmbtf.commands.Command;
 import com.example.crmbtf.model.ReplyButton;
 import com.example.crmbtf.model.TelegramUsers;
 import com.example.crmbtf.telegram.ExecutionContext;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Slf4j
 @Component
 public class Specialists implements Command {
     @Override
     public void doCommand(ExecutionContext executionContext) {
-        executionContext.setGlobalState(TelegramUsers.botstate.SPECIALISTS);
+
         List<ReplyButton> replyButtonList = List.of(new ReplyButton("Доктора"),
-                                                    new ReplyButton("і тут ще хтось"),
-                                                    new ReplyButton("Главное меню"));
+                new ReplyButton("і тут ще хтось"),
+                new ReplyButton("Главное меню"));
 
         executionContext.buildReplyKeyboard(executionContext.getFirstName() + ", рада представить тебе нашу команду профессионалов. \n" +
                 "Качественный подбор персонала, помог собрать лучших врачей - специалистов.", replyButtonList);

@@ -4,10 +4,12 @@ package com.example.crmbtf.commands.appointmenttodoctor;
 import com.example.crmbtf.commands.appointmenttodoctor.localstate.LocalStateForAppointment;
 import com.example.crmbtf.telegram.ExecutionContext;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@Slf4j
 @AllArgsConstructor
 public class ChoseDataToAppointment implements Appointment {
 

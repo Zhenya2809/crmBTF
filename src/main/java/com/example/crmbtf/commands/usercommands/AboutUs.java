@@ -6,14 +6,17 @@ import com.example.crmbtf.model.ReplyButton;
 import com.example.crmbtf.model.TelegramUsers;
 import com.example.crmbtf.telegram.ExecutionContext;
 import com.example.crmbtf.telegram.inline.InlineButton;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Slf4j
 @Component
 public class AboutUs implements Command {
     @Override
     public void doCommand(ExecutionContext executionContext) {
+
 
         List<InlineButton> inlineButtons = List.of(new InlineButton("Instagram", "https://instagram.com"), new InlineButton("Facebook", "https://facebook.com"));
         executionContext.buildInlineKeyboard("Возможно тебя заинтересует одна из наших соц. сетей?", inlineButtons);

@@ -25,11 +25,11 @@ public class AppointmentToDoctors {
     @Column(name = "time")
     private Time time;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "doctorID")
     private Doctor doctor;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "clientID")
     private Patient patient;
 

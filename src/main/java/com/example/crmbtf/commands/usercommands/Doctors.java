@@ -6,12 +6,13 @@ import com.example.crmbtf.model.ReplyButton;
 import com.example.crmbtf.model.TelegramUsers;
 import com.example.crmbtf.service.DoctorService;
 import com.example.crmbtf.telegram.ExecutionContext;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-
+@Slf4j
 @Component
 public class Doctors implements Command {
     @Autowired

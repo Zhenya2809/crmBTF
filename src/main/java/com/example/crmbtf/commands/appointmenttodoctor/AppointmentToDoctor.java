@@ -6,12 +6,14 @@ import com.example.crmbtf.commands.appointmenttodoctor.localstate.LocalStateForA
 import com.example.crmbtf.model.TelegramUsers;
 import com.example.crmbtf.telegram.ExecutionContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Component
+@Slf4j
 public class AppointmentToDoctor implements Command {
 
     @Override
