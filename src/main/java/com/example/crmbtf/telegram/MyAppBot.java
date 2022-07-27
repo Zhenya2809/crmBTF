@@ -153,12 +153,12 @@ public class MyAppBot extends TelegramLongPollingBot {
         }
     }
 
-    @PostConstruct
-
-    public void register() throws TelegramApiException {
-        TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
-        botsApi.registerBot(this);
-    }
+//    @PostConstruct
+//
+//    public void register() throws TelegramApiException {
+//        TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
+//        botsApi.registerBot(this);
+//    }
 
 
 }

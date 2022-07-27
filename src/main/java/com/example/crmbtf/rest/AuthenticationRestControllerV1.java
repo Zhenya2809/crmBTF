@@ -38,7 +38,8 @@ public class AuthenticationRestControllerV1 {
     public ResponseEntity login(@RequestBody AuthenticationRequestDto requestDto) {
         try {
             String username = requestDto.getUsername();
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, requestDto.getPassword()));
+            String password = requestDto.getPassword();
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
             User user = userService.findByUsername(username);
 
             if (user == null) {
@@ -54,7 +55,7 @@ public class AuthenticationRestControllerV1 {
 
             return ResponseEntity.ok(response);
         } catch (AuthenticationException e) {
-            e.printStackTrace();
+            log.error(e.toString());
             throw new BadCredentialsException("Invalid username or password");
         }
     }

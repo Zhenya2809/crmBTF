@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.inject.Singleton;
+import java.util.*;
 
 
 @Service
@@ -56,9 +56,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findByUsername(String username) {
-        User result = userRepository.findByUsername(username);
-        log.info("IN findByUsername - user: {} found by username: {}", result, username);
-        return result;
+        Optional<User> result = userRepository.findByUsername(username);
+        if (result.isPresent()) {
+            log.info("IN findByUsername - user: {} found by username: {}", result, username);
+            return result.get();
+        } else
+            throw new RuntimeException("user not found");
     }
 
     @Override
@@ -70,14 +73,48 @@ public class UserServiceImpl implements UserService {
             return null;
         }
 
-        log.info("IN findById - user: {} found by id: {}", result,id);
+        log.info("IN findById - user: {} found by id: {}", result, id);
         return result;
     }
 
     @Override
     public void delete(Long id) {
         userRepository.deleteById(id);
-        log.info("IN delete - user with id: {} successfully deleted",id);
+        log.info("IN delete - user with id: {} successfully deleted", id);
+    }
+
+    @Override
+    public String userRegistration(String username, String password, String rePassword, String firstName, String lastName, String email) {
+
+
+        Optional<User> result = userRepository.findByUsername(username);
+        if(result.isPresent()){
+            log.error("A user with the same name already exists");
+            return "A user with the same name already exists";
+        }
+        if (!password.equals(rePassword)) {
+            log.info("Passwords do not match");
+            return "Passwords do not match";
+        }
+        Role role = new Role();
+        Date date = new Date();
+        role.setName("ROLE_USER");
+        role.setCreated(date);
+        role.setStatus(Status.ACTIVE);
+        List<Role> roleList = new ArrayList<>();
+        roleList.add(role);
+        User user = new User();
+        user.setUsername(username);
+        user.setRoles(roleList);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setEmail(email);
+        user.setCreated(date);
+        user.setStatus(Status.ACTIVE);
+        user.setPassword(passwordEncoder.encode(password));
+        userRepository.save(user);
+        log.info("IN userRegistration = user with username: {} successfully registred", username);
+        return "User with " +username+" successfully registered";
     }
 
 }
