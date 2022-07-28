@@ -84,37 +84,33 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String userRegistration(String username, String password, String rePassword, String firstName, String lastName, String email) {
+    public List<User> findAll() {
+        return userRepository.findAll();
+    }
+
+    @Override
+    public void userRegistration(String username, String password, String rePassword, String firstName, String lastName, String email) {
 
 
         Optional<User> result = userRepository.findByUsername(username);
-        if(result.isPresent()){
+        if (result.isPresent()) {
             log.error("A user with the same name already exists");
-            return "A user with the same name already exists";
+
         }
         if (!password.equals(rePassword)) {
             log.info("Passwords do not match");
-            return "Passwords do not match";
         }
-        Role role = new Role();
         Date date = new Date();
-        role.setName("ROLE_USER");
-        role.setCreated(date);
-        role.setStatus(Status.ACTIVE);
-        List<Role> roleList = new ArrayList<>();
-        roleList.add(role);
         User user = new User();
         user.setUsername(username);
-        user.setRoles(roleList);
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setEmail(email);
         user.setCreated(date);
         user.setStatus(Status.ACTIVE);
         user.setPassword(passwordEncoder.encode(password));
+        user.setRoles(List.of(new Role(1L,"ROLE_USER")));
         userRepository.save(user);
         log.info("IN userRegistration = user with username: {} successfully registred", username);
-        return "User with " +username+" successfully registered";
     }
-
 }

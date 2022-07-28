@@ -2,8 +2,9 @@ package com.example.crmbtf.service;
 
 import com.example.crmbtf.model.User;
 
+import java.util.Collections;
 import java.util.List;
-
+import java.util.Optional;
 
 
 public interface UserService {
@@ -18,5 +19,7 @@ public interface UserService {
 
     void delete(Long id);
 
-    String userRegistration(String username,String password, String rePassword,String firsName,String lastName,String email);
+    List<User> findAll();
+
+    void userRegistration(String username,String password, String rePassword,String firsName,String lastName,String email);
 }

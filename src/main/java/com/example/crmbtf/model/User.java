@@ -9,7 +9,7 @@ import java.util.List;
 
 
 @Entity
-@Table(name = "users")
+@Table(name = "t_user")
 @Data
 public class User extends BaseEntity {
 
@@ -30,9 +30,9 @@ public class User extends BaseEntity {
 
     @Transient
     private String passwordConfirm;
-
+    @Column(columnDefinition = "ROLE_USER")
     @ManyToMany(fetch = FetchType.EAGER)
-    @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
+    @Cascade({CascadeType.MERGE})
     @JoinTable(name = "user_roles",
             joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})

@@ -1,30 +1,32 @@
 package com.example.crmbtf.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.List;
 
 
 
 @Entity
-@Table(name = "roles")
-@Data
+@Table(name = "t_role")
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Role extends BaseEntity {
 
     @Column(name = "name")
     private String name;
-    @Cascade({ CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.PERSIST})
+    @Cascade({CascadeType.MERGE})
     @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
     private List<User> users;
+
+    public Role(Long id,String role_user) {
+        super.setId(id);
+        this.name=role_user;
+    }
 
     @Override
     public String toString() {
