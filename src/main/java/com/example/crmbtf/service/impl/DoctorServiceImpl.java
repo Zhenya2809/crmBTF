@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -23,7 +24,7 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
-    public void createrDoctor(String doctorFio, String speciality, String about, String photo) {
+    public String createDoctor(String doctorFio, String speciality, String about, String photo) {
         Doctor doctor = new Doctor();
         doctor.setFio(doctorFio);
         doctor.setSpeciality(speciality);
@@ -31,6 +32,7 @@ public class DoctorServiceImpl implements DoctorService {
         doctor.setPhoto(photo);
         doctorRepository.save(doctor);
         log.info("IN created - doctor:{} successfully created", doctor);
+        return "Doctor :{" + doctor.getFio() + "} successfully created";
     }
 
     @Override
@@ -40,10 +42,12 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
-    public Doctor getDoctorById(Long id) {
-        Doctor doctor = doctorRepository.findDoctorById(id);
-        log.info("IN getDoctorById - doctor: {} found by id: {}", doctor, id);
-        return doctor;
+    public Optional<Doctor> getDoctorById(Long id) {
+        Optional<Doctor> doctorById = doctorRepository.findDoctorById(id);
+        if (doctorById.isPresent()) {
+            log.info("IN getDoctorById - doctor: {} found by id: {}", doctorById.get(), id);
+        }
+        return doctorById;
     }
 
     @Override

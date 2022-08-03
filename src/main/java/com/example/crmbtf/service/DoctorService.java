@@ -5,13 +5,14 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public interface DoctorService {
-    void createrDoctor(String doctorFio, String speciality, String about, String photo);
+    String createDoctor(String doctorFio, String speciality, String about, String photo);
 
     void deleteDoctor(Long id);
 
-    Doctor getDoctorById(Long id);
+    Optional<Doctor> getDoctorById(Long id);
 
     List<Doctor> findAll();
 

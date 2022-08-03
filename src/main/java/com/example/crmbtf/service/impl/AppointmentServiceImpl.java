@@ -43,15 +43,17 @@ public class AppointmentServiceImpl implements AppointmentService {
         if (patientOptional.isPresent()) {
             try {
                 Patient patient = patientOptional.get();
-                Doctor doctor = doctorRepository.findDoctorById(Long.valueOf(doctorID));
-                AppointmentToDoctors incoming = new AppointmentToDoctors();
-                incoming.setDate(java.sql.Date.valueOf(date));
-                incoming.setTime(time);
-                incoming.setDoctor(doctor);
-                incoming.setPatient(patient);
+                Optional<Doctor> doctorById = doctorRepository.findDoctorById(Long.valueOf(doctorID));
+                if (doctorById.isPresent()) {
+                    AppointmentToDoctors incoming = new AppointmentToDoctors();
+                    incoming.setDate(java.sql.Date.valueOf(date));
+                    incoming.setTime(time);
+                    incoming.setDoctor(doctorById.get());
+                    incoming.setPatient(patient);
 
-                appointmentRepository.save(incoming);
-                log.info("IN createAppointment - appointment: {} successfully registered", incoming);
+                    appointmentRepository.save(incoming);
+                    log.info("IN createAppointment - appointment: {} successfully registered", incoming);
+                }
             } catch (DataIntegrityViolationException e) {
                 log.error(" ERROR ---->  this date/time/doctor already exists  <----");
             }
@@ -66,14 +68,16 @@ public class AppointmentServiceImpl implements AppointmentService {
         if (patientOptional.isPresent()) {
 
             Patient patient = patientOptional.get();
-            Doctor doctor = doctorRepository.findDoctorById(Long.valueOf(doctorID));
-            AppointmentToDoctors incoming = new AppointmentToDoctors();
-            incoming.setDate(java.sql.Date.valueOf(date));
-            incoming.setTime(time);
-            incoming.setDoctor(doctor);
-            incoming.setPatient(patient);
-            appointmentRepository.save(incoming);
-            log.info("IN createAppointment - appointment: {} successfully registered", incoming);
+            Optional<Doctor> doctorById = doctorRepository.findDoctorById(Long.valueOf(doctorID));
+            if(doctorById.isPresent()) {
+                AppointmentToDoctors incoming = new AppointmentToDoctors();
+                incoming.setDate(java.sql.Date.valueOf(date));
+                incoming.setTime(time);
+                incoming.setDoctor(doctorById.get());
+                incoming.setPatient(patient);
+                appointmentRepository.save(incoming);
+                log.info("IN createAppointment - appointment: {} successfully registered", incoming);
+            }
         } else {
             TelegramUsers user = executionContext.getAuthorizationUser();
             Patient patient = new Patient();
@@ -83,14 +87,16 @@ public class AppointmentServiceImpl implements AppointmentService {
             patient.setPhoneNumber(user.getPhone());
             executionContext.getPatientService().save(patient);
 
-            Doctor doctor = doctorRepository.findDoctorById(Long.valueOf(doctorID));
-            AppointmentToDoctors incoming = new AppointmentToDoctors();
-            incoming.setDate(java.sql.Date.valueOf(date));
-            incoming.setTime(time);
-            incoming.setDoctor(doctor);
-            incoming.setPatient(patient);
-            appointmentRepository.save(incoming);
-            log.info("IN createAppointment - appointment: {} successfully registered", incoming);
+            Optional<Doctor> doctorById = doctorRepository.findDoctorById(Long.valueOf(doctorID));
+            if(doctorById.isPresent()) {
+                AppointmentToDoctors incoming = new AppointmentToDoctors();
+                incoming.setDate(java.sql.Date.valueOf(date));
+                incoming.setTime(time);
+                incoming.setDoctor(doctorById.get());
+                incoming.setPatient(patient);
+                appointmentRepository.save(incoming);
+                log.info("IN createAppointment - appointment: {} successfully registered", incoming);
+            }
         }
     }
 
@@ -123,28 +129,28 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Override
     public Iterable<AppointmentToDoctors> findAppointmentToDoctorsByDoctor(Doctor doctor) {
         List<AppointmentToDoctors> result = appointmentRepository.findAppointmentToDoctorsByDoctor(doctor);
-        log.info("IN findAppointmentToDocByDoctor {} appointment found",result.size());
+        log.info("IN findAppointmentToDocByDoctor {} appointment found", result.size());
         return result;
     }
 
     @Override
     public List<AppointmentToDoctors> findAllByDoctor_Id(Long id) {
         List<AppointmentToDoctors> result = appointmentRepository.findAllByDoctor_Id(id);
-        log.info("IN findAllByDocId {} appointment found ",result);
+        log.info("IN findAllByDocId {} appointment found ", result);
         return result;
     }
 
     @Override
     public HashMap<Date, List<String>> findAllAvailableTimeByDoctorId(Long id) {
         List<AppointmentToDoctors> allByDoctor_id = appointmentRepository.findAllByDoctor_Id(id);
-        log.info("IN findAllAvailableTimeByDocId - time: {} found by id: {}",allByDoctor_id,id);
+        log.info("IN findAllAvailableTimeByDocId - time: {} found by id: {}", allByDoctor_id, id);
         return listToMap(allByDoctor_id);
     }
 
     @Override
     public List<AppointmentToDoctors> findAllByPatientId(Long id) {
         List<AppointmentToDoctors> result = appointmentRepository.findAllByPatientId(id);
-        log.info("IN findAllPatientId {} appointment found ",result.size());
+        log.info("IN findAllPatientId {} appointment found ", result.size());
         return result;
     }
 
@@ -152,7 +158,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     public void deleteAppointmentByDoctorId(Long id) {
         AppointmentToDoctors appointmentToDoctorsByDoctorsappointmentsID = appointmentRepository.findAppointmentToDoctorsByDoctorsappointmentsID(id);
         appointmentRepository.delete(appointmentToDoctorsByDoctorsappointmentsID);
-        log.info("IN deleteAppointmentbyDocId - appointment with id: {} successfully deleted",id);
+        log.info("IN deleteAppointmentbyDocId - appointment with id: {} successfully deleted", id);
 
     }
 
@@ -161,10 +167,12 @@ public class AppointmentServiceImpl implements AppointmentService {
         AppointmentToDoctors appointment = appointmentRepository.findAppointmentToDoctorsByDoctorsappointmentsID(id);
         appointment.setDate(java.sql.Date.valueOf(date));
         appointment.setTime(Time.valueOf(time));
-        Doctor doctor = doctorRepository.findDoctorById(Long.valueOf(doctorID));
-        appointment.setDoctor(doctor);
-        appointmentRepository.save(appointment);
-        log.info("IN saveAppointments - appointment: {} successfully saved", appointment);
+        Optional<Doctor> doctorById = doctorRepository.findDoctorById(Long.valueOf(doctorID));
+        if(doctorById.isPresent()) {
+            appointment.setDoctor(doctorById.get());
+            appointmentRepository.save(appointment);
+            log.info("IN saveAppointments - appointment: {} successfully saved", appointment);
+        }
     }
 
     public static HashMap<Date, List<String>> listToMap(List<AppointmentToDoctors> list) {

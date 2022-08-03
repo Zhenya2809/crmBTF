@@ -30,7 +30,6 @@ public class User extends BaseEntity {
 
     @Transient
     private String passwordConfirm;
-    @Column(columnDefinition = "ROLE_USER")
     @ManyToMany(fetch = FetchType.EAGER)
     @Cascade({CascadeType.MERGE})
     @JoinTable(name = "user_roles",

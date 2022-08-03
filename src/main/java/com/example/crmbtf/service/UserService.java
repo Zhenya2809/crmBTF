@@ -21,5 +21,5 @@ public interface UserService {
 
     List<User> findAll();
 
-    void userRegistration(String username,String password, String rePassword,String firsName,String lastName,String email);
+    String userRegistration(String username,String password, String rePassword,String firsName,String lastName,String email);
 }

@@ -6,7 +6,7 @@ import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.*;
 import java.util.List;
-
+import java.util.Objects;
 
 
 @Entity
@@ -23,9 +23,25 @@ public class Role extends BaseEntity {
     @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
     private List<User> users;
 
-    public Role(Long id,String role_user) {
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Role role = (Role) o;
+        if (!Objects.equals(super.getId(), role.getId())) return false;
+        return Objects.equals(name, role.name);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Math.toIntExact(super.getId());
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        return result;
+    }
+
+    public Role(Long id, String role_user) {
         super.setId(id);
-        this.name=role_user;
+        this.name = role_user;
     }
 
     @Override

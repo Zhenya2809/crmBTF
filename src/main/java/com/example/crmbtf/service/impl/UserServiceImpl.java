@@ -89,16 +89,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void userRegistration(String username, String password, String rePassword, String firstName, String lastName, String email) {
+    public String userRegistration(String username, String password, String rePassword, String firstName, String lastName, String email) {
 
 
         Optional<User> result = userRepository.findByUsername(username);
         if (result.isPresent()) {
             log.error("A user with the same name already exists");
+            return "A user with the same name already exists";
 
         }
         if (!password.equals(rePassword)) {
             log.info("Passwords do not match");
+            return "Passwords do not match";
         }
         Date date = new Date();
         User user = new User();
@@ -112,5 +114,6 @@ public class UserServiceImpl implements UserService {
         user.setRoles(List.of(new Role(1L,"ROLE_USER")));
         userRepository.save(user);
         log.info("IN userRegistration = user with username: {} successfully registred", username);
+        return "IN userRegistration = user with username: { "+username+" } successfully registred";
     }
 }

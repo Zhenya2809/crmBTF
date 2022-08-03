@@ -53,6 +53,7 @@ public class AuthenticationRestControllerV1 {
             response.put("username", username);
             response.put("token", token);
 
+
             return ResponseEntity.ok(response);
         } catch (AuthenticationException e) {
             log.error(e.toString());

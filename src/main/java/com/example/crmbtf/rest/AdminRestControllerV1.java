@@ -1,12 +1,15 @@
 package com.example.crmbtf.rest;
 
-import com.example.crmbtf.model.AppointmentToDoctors;
+import com.example.crmbtf.model.Doctor;
+import com.example.crmbtf.model.Role;
 import com.example.crmbtf.model.dto.AdminUserDto;
 import com.example.crmbtf.model.User;
-import com.example.crmbtf.model.dto.RegistrationRequestDto;
+import com.example.crmbtf.model.dto.DoctorDto;
 import com.example.crmbtf.model.dto.UserDto;
 import com.example.crmbtf.service.AppointmentService;
+import com.example.crmbtf.service.DoctorService;
 import com.example.crmbtf.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,18 +17,22 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
-
+@Slf4j
 @CrossOrigin("*")
 @RestController
 @RequestMapping(value = "/api/v1/admin/")
 public class AdminRestControllerV1 {
 
     private final UserService userService;
+    private final DoctorService doctorService;
+    private final AppointmentService appointmentService;
 
 
     @Autowired
-    public AdminRestControllerV1(UserService userService, AppointmentService appointmentService) {
+    public AdminRestControllerV1(UserService userService, DoctorService doctorService, AppointmentService appointmentService) {
         this.userService = userService;
+        this.doctorService = doctorService;
+        this.appointmentService = appointmentService;
     }
 
     @GetMapping(value = "users/{id}")
@@ -42,7 +49,7 @@ public class AdminRestControllerV1 {
     }
 
     @GetMapping(value = "users/search")
-    public ResponseEntity getAppointment() {
+    public ResponseEntity searchAllUser() {
 //HashMap<Long,User> userHashMap = new HashMap<>();
         List<UserDto> userDtoList = new ArrayList<>();
         List<User> userList = userService.findAll().stream().toList();
@@ -59,9 +66,51 @@ public class AdminRestControllerV1 {
         return ResponseEntity.ok(userDtoList);
     }
 
+    @GetMapping(value = "doctors/search")
+    public ResponseEntity searchAllDoctors() {
+//HashMap<Long,User> userHashMap = new HashMap<>();
+        List<DoctorDto> doctorDtoList = new ArrayList<>();
+        List<Doctor> doctors = doctorService.findAll().stream().toList();
+
+        for (Doctor doctor : doctors) {
+            DoctorDto doctorDto = DoctorDto.fromDoctor(doctor);
+            doctorDtoList.add(doctorDto);
+
+        }
+        return ResponseEntity.ok(doctorDtoList);
+    }
+
+    @GetMapping(value = "sendEmailReminder")
+    public void sendEmailReminder() {
+        appointmentService.sendEmailReminder();
+        log.info("email sent");
+    }
+
     @GetMapping(value = "users/delete/{id}")
     public void deleteUserById(@PathVariable(name = "id") Long id) {
-        userService.delete(id);
+        User byId = userService.findById(id);
+        List<Role> roles = byId.getRoles();
+        List<Role> roleList = List.of(new Role(2L, "ROLE_ADMIN"));
+        if (!roleList.equals(roles)) {
+            userService.delete(id);
+        }
+    }
+
+    @GetMapping(value = "doctors/delete/{id}")
+    public void deleteDoctorsById(@PathVariable(name = "id") Long id) {
+        Optional<Doctor> doctorById = doctorService.getDoctorById(id);
+        if (doctorById.isPresent()) {
+            doctorService.deleteDoctor(id);
+        }
+    }
+
+    @PostMapping("saveDoctor")
+    public ResponseEntity saveDoctor(@RequestBody DoctorDto requestDto) {
+        String s = doctorService.createDoctor(requestDto.getDoctorFIO(), requestDto.getSpeciality(), requestDto.getAbout(), requestDto.getLinkPhoto());
+        Map<Object, Object> response = new HashMap<>();
+        response.put("result", s);
+        return ResponseEntity.ok(response);
+
     }
 
     @PostMapping("users")
@@ -77,5 +126,6 @@ public class AdminRestControllerV1 {
         return ResponseEntity.ok(userList);
 
     }
+
 
 }
