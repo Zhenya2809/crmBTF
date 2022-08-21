@@ -1,23 +1,21 @@
 package com.example.crmbtf.service.impl;
 
 import com.example.crmbtf.email.SendEmailTLS;
-import com.example.crmbtf.model.AppointmentToDoctors;
-import com.example.crmbtf.model.Doctor;
-import com.example.crmbtf.model.Patient;
-import com.example.crmbtf.model.TelegramUsers;
+import com.example.crmbtf.model.*;
 import com.example.crmbtf.repository.AppointmentRepository;
 import com.example.crmbtf.repository.DoctorRepository;
 import com.example.crmbtf.repository.PatientRepository;
+import com.example.crmbtf.repository.UserRepository;
 import com.example.crmbtf.service.AppointmentService;
 import com.example.crmbtf.telegram.ExecutionContext;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Time;
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
 import java.util.*;
 
 @Service
@@ -27,52 +25,55 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final PatientRepository patientRepository;
     private final DoctorRepository doctorRepository;
 
+    private final UserRepository userRepository;
 
-    public AppointmentServiceImpl(AppointmentRepository appointmentRepository, PatientRepository patientRepository, DoctorRepository doctorRepository) {
+
+    public AppointmentServiceImpl(AppointmentRepository appointmentRepository, PatientRepository patientRepository, DoctorRepository doctorRepository, UserRepository userRepository) {
         this.appointmentRepository = appointmentRepository;
         this.patientRepository = patientRepository;
         this.doctorRepository = doctorRepository;
+        this.userRepository = userRepository;
     }
 
+//    @Override
+//    public void createAppointmentToDoctors(String date, Time time, String doctorID) {
+//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//
+//        Optional<Patient> patientOptional = patientRepository.findByEmail(auth.getName());
+//
+//        if (patientOptional.isPresent()) {
+//            try {
+//                Patient patient = patientOptional.get();
+//                Optional<Doctor> doctorById = doctorRepository.findDoctorById(Long.valueOf(doctorID));
+//                if (doctorById.isPresent()) {
+//                    AppointmentToDoctors incoming = new AppointmentToDoctors();
+//                    incoming.setDate(java.sql.Date.valueOf(date));
+//                    incoming.setTime(time);
+//                    incoming.setDoctor(doctorById.get());
+//                    incoming.setPatient(patient);
+//
+//                    appointmentRepository.save(incoming);
+//                    log.info("IN createAppointment - appointment: {} successfully registered", incoming);
+//                }
+//            } catch (DataIntegrityViolationException e) {
+//                log.error(" ERROR ---->  this date/time/doctor already exists  <----");
+//            }
+//
+//        }
+//    }
+
     @Override
-    public void createAppointmentToDoctors(String date, Time time, String doctorID) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        Optional<Patient> patientOptional = patientRepository.findByEmail(auth.getName());
-
-        if (patientOptional.isPresent()) {
-            try {
-                Patient patient = patientOptional.get();
-                Optional<Doctor> doctorById = doctorRepository.findDoctorById(Long.valueOf(doctorID));
-                if (doctorById.isPresent()) {
-                    AppointmentToDoctors incoming = new AppointmentToDoctors();
-                    incoming.setDate(java.sql.Date.valueOf(date));
-                    incoming.setTime(time);
-                    incoming.setDoctor(doctorById.get());
-                    incoming.setPatient(patient);
-
-                    appointmentRepository.save(incoming);
-                    log.info("IN createAppointment - appointment: {} successfully registered", incoming);
-                }
-            } catch (DataIntegrityViolationException e) {
-                log.error(" ERROR ---->  this date/time/doctor already exists  <----");
-            }
-
-        }
-    }
-
-    @Override
-    public void createAppointmentTDoctors(String email, String date, Time time, String doctorID, ExecutionContext executionContext) {
+    public void createAppointmentToDoctorsByTelegram(String email, String date, String time, String doctorID, ExecutionContext executionContext) {
         Optional<Patient> patientOptional = patientRepository.findByEmail(email);
 
         if (patientOptional.isPresent()) {
 
             Patient patient = patientOptional.get();
             Optional<Doctor> doctorById = doctorRepository.findDoctorById(Long.valueOf(doctorID));
-            if(doctorById.isPresent()) {
+            if (doctorById.isPresent()) {
                 AppointmentToDoctors incoming = new AppointmentToDoctors();
                 incoming.setDate(java.sql.Date.valueOf(date));
-                incoming.setTime(time);
+                incoming.setTime(LocalTime.parse(time));
                 incoming.setDoctor(doctorById.get());
                 incoming.setPatient(patient);
                 appointmentRepository.save(incoming);
@@ -88,10 +89,10 @@ public class AppointmentServiceImpl implements AppointmentService {
             executionContext.getPatientService().save(patient);
 
             Optional<Doctor> doctorById = doctorRepository.findDoctorById(Long.valueOf(doctorID));
-            if(doctorById.isPresent()) {
+            if (doctorById.isPresent()) {
                 AppointmentToDoctors incoming = new AppointmentToDoctors();
                 incoming.setDate(java.sql.Date.valueOf(date));
-                incoming.setTime(time);
+                incoming.setTime(LocalTime.parse(time));
                 incoming.setDoctor(doctorById.get());
                 incoming.setPatient(patient);
                 appointmentRepository.save(incoming);
@@ -101,12 +102,45 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
+    public void createAppointmentToDoctorsBySite(String date, String time, Long doctorID) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Patient patient;
+        Optional<User> byUsername = userRepository.findByUsername(auth.getName());
+        if (byUsername.isPresent()) {
+            String email = byUsername.get().getEmail();
+            Optional<Patient> byEmail = patientRepository.findByEmail(email);
+            if (byEmail.isPresent()) {
+                patient = byEmail.get();
+            } else {
+                patient = new Patient();
+                patient.setFio(byUsername.get().getFirstName() + " " + byUsername.get().getLastName());
+                patient.setEmail(byUsername.get().getEmail());
+                patientRepository.save(patient);
+            }
+            Optional<Doctor> doctorById = doctorRepository.findDoctorById(doctorID);
+            if (doctorById.isPresent()) {
+
+                Doctor doctor = doctorById.get();
+
+                AppointmentToDoctors appointment = new AppointmentToDoctors();
+                appointment.setDate(java.sql.Date.valueOf(date));
+                appointment.setDoctor(doctor);
+                appointment.setPatient(patient);
+                appointment.setTime(LocalTime.parse(time));
+                appointmentRepository.save(appointment);
+                log.info("IN createAppointmentToDoctorsBySite - appointment: {} successfully created", appointment);
+            }
+        }
+    }
+
+
+    @Override
     public void sendEmailReminder() {
         SendEmailTLS sendEmailTLS = new SendEmailTLS();
 
         appointmentRepository.findAll().forEach(e -> {
             Date date = e.getDate();
-            Time time = e.getTime();
+            LocalTime time = e.getTime();
             String email = e.getPatient().getEmail();
             Date todayDate = new Date();
             SimpleDateFormat formatForDateNow = new SimpleDateFormat("yyyy-MM-dd");
@@ -154,6 +188,22 @@ public class AppointmentServiceImpl implements AppointmentService {
         return result;
     }
 
+    public List<AppointmentToDoctors> getUserAppointment() {
+        List<AppointmentToDoctors> appointmentToDoctors = new ArrayList<>();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Optional<User> byUsername = userRepository.findByUsername(auth.getName());
+        if (byUsername.isPresent()) {
+            User user = byUsername.get();
+            Optional<Patient> byEmail = patientRepository.findByEmail(user.getEmail());
+            if (byEmail.isPresent()) {
+                Patient patient = byEmail.get();
+                appointmentToDoctors = patient.getAppointmentToDoctors();
+            }
+        }
+
+        return appointmentToDoctors;
+    }
+
     @Override
     public void deleteAppointmentByDoctorId(Long id) {
         AppointmentToDoctors appointmentToDoctorsByDoctorsappointmentsID = appointmentRepository.findAppointmentToDoctorsByDoctorsappointmentsID(id);
@@ -166,9 +216,9 @@ public class AppointmentServiceImpl implements AppointmentService {
     public void saveAppointments(Long id, String date, String time, String doctorID) {
         AppointmentToDoctors appointment = appointmentRepository.findAppointmentToDoctorsByDoctorsappointmentsID(id);
         appointment.setDate(java.sql.Date.valueOf(date));
-        appointment.setTime(Time.valueOf(time));
+        appointment.setTime(LocalTime.parse(time));
         Optional<Doctor> doctorById = doctorRepository.findDoctorById(Long.valueOf(doctorID));
-        if(doctorById.isPresent()) {
+        if (doctorById.isPresent()) {
             appointment.setDoctor(doctorById.get());
             appointmentRepository.save(appointment);
             log.info("IN saveAppointments - appointment: {} successfully saved", appointment);

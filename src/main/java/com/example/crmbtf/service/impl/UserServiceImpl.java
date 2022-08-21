@@ -1,5 +1,6 @@
 package com.example.crmbtf.service.impl;
 
+import com.example.crmbtf.model.DaySchedule;
 import com.example.crmbtf.model.Role;
 import com.example.crmbtf.model.Status;
 import com.example.crmbtf.model.User;
@@ -12,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Singleton;
+import java.time.LocalDate;
 import java.util.*;
 
 
@@ -46,7 +48,53 @@ public class UserServiceImpl implements UserService {
 
         return registeredUser;
     }
+    public List<String> freeTimeToAppointmentForDay(LocalDate day, Long docId, HashMap<Date, List<String>> dateAndTimeMap) {
+        List<String> timeList = new ArrayList<>();
+        timeList.add("08:00");
+        timeList.add("09:00");
+        timeList.add("10:00");
+        timeList.add("11:00");
+        timeList.add("12:00");
+        timeList.add("13:00");
+        timeList.add("14:00");
+        timeList.add("15:00");
+        timeList.add("16:00");
+        timeList.add("17:00");
+        timeList.add("18:00");
+        timeList.add("19:00");
 
+        LocalDate today = LocalDate.now();
+        ArrayList<DaySchedule> daySchedules = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            LocalDate localDate = today.plusDays(i);
+            DaySchedule daySchedule = new DaySchedule();
+            String key = localDate.toString();
+            daySchedule.setDate(key);
+            if (dateAndTimeMap.get(java.sql.Date.valueOf(key)) != null) {
+                daySchedule.setAvailable(new HashSet<>(dateAndTimeMap.get(java.sql.Date.valueOf(key))));
+            } else {
+                daySchedule.setAvailable(new HashSet<>());
+            }
+            daySchedules.add(daySchedule);
+
+        }
+        List<String> listToday = new ArrayList<>();
+
+        daySchedules.forEach(e -> {
+            String date = e.getDate();
+            HashSet<String> available = e.getAvailable();
+            if (date.equals(day.toString())) {
+                listToday.addAll(available);
+            }
+        });
+        List<String> list = listToday.stream().map(e -> {
+            String[] split = e.split(":");
+            return split[0] + ":" + split[1];
+        }).toList();
+
+        timeList.removeAll(list);
+        return timeList;
+    }
     @Override
     public List<User> getAll() {
         List<User> result = userRepository.findAll();

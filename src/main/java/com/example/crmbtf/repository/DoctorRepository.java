@@ -21,4 +21,5 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
     Collection<Doctor> searchDoctor(@Param("speciality") String speciality,
                                     @Param("fio") String fio);
 
+
 }

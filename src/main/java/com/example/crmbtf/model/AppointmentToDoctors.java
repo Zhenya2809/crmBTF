@@ -8,6 +8,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.sql.Date;
 import java.sql.Time;
+import java.time.LocalTime;
 
 @Entity
 @Getter
@@ -23,7 +24,7 @@ public class AppointmentToDoctors {
     @Column(name = "date")
     private Date date;
     @Column(name = "time")
-    private Time time;
+    private LocalTime time;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "doctorID")

@@ -2,13 +2,13 @@ package com.example.crmbtf.service;
 
 import com.example.crmbtf.model.User;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.*;
 
 
 public interface UserService {
 
+    public  List<String> freeTimeToAppointmentForDay(LocalDate day, Long docId, HashMap<Date, List<String>> dateAndTimeMap);
     User register(User user);
 
     List<User> getAll();

@@ -8,9 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -36,6 +34,17 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
+    public Set<String> getDrSpeciality() {
+        Set<String> specialityDr = new HashSet<>();
+        List<Doctor> all = doctorRepository.findAll();
+        all.forEach(e-> {
+            String speciality = e.getSpeciality();
+            specialityDr.add(speciality);
+        });
+        return specialityDr;
+    }
+
+    @Override
     public void deleteDoctor(Long id) {
         doctorRepository.deleteById(id);
         log.info("IN delete - doctor with id: {} successfully deleted", id);
@@ -49,6 +58,7 @@ public class DoctorServiceImpl implements DoctorService {
         }
         return doctorById;
     }
+
 
     @Override
     public List<Doctor> findAll() {

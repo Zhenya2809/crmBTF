@@ -20,6 +20,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 
 import java.sql.Time;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.*;
 
 @Getter
@@ -304,10 +305,10 @@ public class ExecutionContext {
         return timeList;
     }
 
-    public void createAppointmentToDoctor(LocalDate day, Time time, String docId, ExecutionContext executionContext) {
+    public void createAppointmentToDoctor(LocalDate day, String time, String docId, ExecutionContext executionContext) {
 
         String email = telegramUsersService.findDataUserByChatId(getChatId()).get().getEmail();
-        appointmentService.createAppointmentTDoctors(email, day.toString(), time, docId, executionContext);
+        appointmentService.createAppointmentToDoctorsByTelegram(email, day.toString(), time, docId, executionContext);
         replyMessage(getFirstName() + " ты записан " + day + " на " + time + "\n с нетерпение ждём тебя");
         List<String> buttonsNameList = List.of("Наш адрес", "Услуги", "Специалисты", "Контакты", "Главное меню");
         buildReplyKeyboardWithStringList("Возможно я готов помочь тебе ещё?", buttonsNameList);

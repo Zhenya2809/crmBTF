@@ -6,10 +6,12 @@ import org.springframework.data.repository.query.Param;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface DoctorService {
     String createDoctor(String doctorFio, String speciality, String about, String photo);
 
+    Set<String> getDrSpeciality();
     void deleteDoctor(Long id);
 
     Optional<Doctor> getDoctorById(Long id);

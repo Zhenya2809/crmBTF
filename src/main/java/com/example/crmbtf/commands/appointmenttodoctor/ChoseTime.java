@@ -5,6 +5,7 @@ import com.example.crmbtf.commands.appointmenttodoctor.localstate.LocalStateForA
 import com.example.crmbtf.telegram.ExecutionContext;
 
 import java.sql.Time;
+import java.time.LocalTime;
 
 public class ChoseTime implements Appointment {
 
@@ -13,7 +14,7 @@ public class ChoseTime implements Appointment {
     public void execute(ExecutionContext executionContext, LocalStateForAppointment localStateForAppointment) {
         Long docId = localStateForAppointment.getDoctorId();
         String inputMessage = executionContext.getInputText();
-        executionContext.createAppointmentToDoctor(localStateForAppointment.getDate(), Time.valueOf(inputMessage + ":00"), String.valueOf(docId),executionContext);
+        executionContext.createAppointmentToDoctor(localStateForAppointment.getDate(), inputMessage + ":00", String.valueOf(docId),executionContext);
         executionContext.setLocalState(null);
         executionContext.setGlobalState(null);
 

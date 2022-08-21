@@ -1,13 +1,16 @@
 package com.example.crmbtf.rest;
 
 import com.example.crmbtf.model.Doctor;
+import com.example.crmbtf.model.Patient;
 import com.example.crmbtf.model.Role;
 import com.example.crmbtf.model.dto.AdminUserDto;
 import com.example.crmbtf.model.User;
 import com.example.crmbtf.model.dto.DoctorDto;
+import com.example.crmbtf.model.dto.PatientDTO;
 import com.example.crmbtf.model.dto.UserDto;
 import com.example.crmbtf.service.AppointmentService;
 import com.example.crmbtf.service.DoctorService;
+import com.example.crmbtf.service.PatientService;
 import com.example.crmbtf.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,13 +29,14 @@ public class AdminRestControllerV1 {
     private final UserService userService;
     private final DoctorService doctorService;
     private final AppointmentService appointmentService;
-
+    private final PatientService patientService;
 
     @Autowired
-    public AdminRestControllerV1(UserService userService, DoctorService doctorService, AppointmentService appointmentService) {
+    public AdminRestControllerV1(UserService userService, DoctorService doctorService, AppointmentService appointmentService, PatientService patientService) {
         this.userService = userService;
         this.doctorService = doctorService;
         this.appointmentService = appointmentService;
+        this.patientService = patientService;
     }
 
     @GetMapping(value = "users/{id}")
@@ -48,11 +52,22 @@ public class AdminRestControllerV1 {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @GetMapping(value = "myProfile")
+    public ResponseEntity myProfile() {
+
+        List<PatientDTO> patientDTOList = new ArrayList<>();
+        List<Patient> patients = patientService.findAll();
+        for (Patient patient : patients) {
+            PatientDTO patientDTO = PatientDTO.fromPatient(patient);
+            patientDTOList.add(patientDTO);
+        }
+        return ResponseEntity.ok(patientDTOList);
+    }
     @GetMapping(value = "users/search")
     public ResponseEntity searchAllUser() {
 //HashMap<Long,User> userHashMap = new HashMap<>();
         List<UserDto> userDtoList = new ArrayList<>();
-        List<User> userList = userService.findAll().stream().toList();
+        List<User> userList = userService.findAll();
         for (User user : userList) {
 //            userHashMap.put(user.getId(),user);
             UserDto userDto = new UserDto();
@@ -70,7 +85,7 @@ public class AdminRestControllerV1 {
     public ResponseEntity searchAllDoctors() {
 //HashMap<Long,User> userHashMap = new HashMap<>();
         List<DoctorDto> doctorDtoList = new ArrayList<>();
-        List<Doctor> doctors = doctorService.findAll().stream().toList();
+        List<Doctor> doctors = doctorService.findAll();
 
         for (Doctor doctor : doctors) {
             DoctorDto doctorDto = DoctorDto.fromDoctor(doctor);
@@ -112,6 +127,8 @@ public class AdminRestControllerV1 {
         return ResponseEntity.ok(response);
 
     }
+
+
 
     @PostMapping("users")
     public ResponseEntity postAppointment(@RequestBody Long id) {
