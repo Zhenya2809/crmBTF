@@ -19,12 +19,12 @@ public class ChoseDoctor implements Appointment {
         List<Doctor> doctorsBySpeciality = executionContext.getDoctorService().findDoctorsBySpeciality(inputMessage);
                 doctorsBySpeciality.forEach(e -> {
             String speciality = e.getSpeciality();
-            String fio = e.getFio();
+            String fio = e.getFirstName()+" "+ e.getLastName();
             executionContext.replyImage(e.getPhoto());
             executionContext.replyMessage(e.getAbout());
             executionContext.replyMessage(speciality + " " + fio);
         });
-        List<ReplyButton> doctorsFIOListForButton = doctorsBySpeciality.stream().map(e -> new ReplyButton(e.getFio())).toList();
+        List<ReplyButton> doctorsFIOListForButton = doctorsBySpeciality.stream().map(e -> new ReplyButton(e.getFirstName()+" "+e.getLastName())).toList();
         executionContext.buildReplyKeyboard("Выберите доктора", doctorsFIOListForButton);
         localStateForAppointment.setStep("chose_id");
 

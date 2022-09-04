@@ -8,6 +8,8 @@ import java.util.Optional;
 public interface PatientCardService {
     PatientCard findPatientCardById(Long id);
     void save(PatientCard patientCard);
+
+    void delete(Long id);
     PatientCard findPatientCardByPatientId(Long id);
     Optional<PatientCard> findPatientCardByPatient(Patient patient);
 }

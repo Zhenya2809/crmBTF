@@ -22,9 +22,13 @@ public class PatientCardServiceImpl implements PatientCardService {
 
     @Override
     public PatientCard findPatientCardById(Long id) {
-        PatientCard patientCardById = patientCardRepository.findPatientCardById(id);
-        log.info("IN findPatientCardById PatientCard:{} found by id:{}", patientCardById, id);
-        return patientCardById;
+        Optional<PatientCard> patientCardById = patientCardRepository.findPatientCardById(id);
+        if (patientCardById.isPresent()) {
+            PatientCard patientCard = patientCardById.get();
+            log.info("IN findPatientCardById PatientCard:{} found by id:{}", patientCard, id);
+            return patientCard;
+        }
+        throw new RuntimeException("patient not found");
     }
 
     @Override
@@ -32,6 +36,16 @@ public class PatientCardServiceImpl implements PatientCardService {
         patientCardRepository.save(patientCard);
         log.info("IN save PatientCard:{} successfully saved", patientCard);
 
+    }
+
+    @Override
+    public void delete(Long id) {
+        Optional<PatientCard> patientCardById = patientCardRepository.findPatientCardById(id);
+        if(patientCardById.isPresent()){
+            PatientCard patientCard = patientCardById.get();
+            patientCardRepository.delete(patientCard);
+            log.info("IN delete PatientCard:{} found by id:{} is deleted", patientCard, id);
+        }
     }
 
     @Override

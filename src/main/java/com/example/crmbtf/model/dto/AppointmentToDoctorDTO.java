@@ -13,13 +13,16 @@ public class AppointmentToDoctorDTO {
     private Date date;
     private LocalTime time;
     private String doctorSpeciality;
-    private String doctorFIO;
+    private String doctorFirstName;
+    private String doctorLastName;
 
     public static AppointmentToDoctorDTO fromPatient(AppointmentToDoctors appointment) {
         AppointmentToDoctorDTO appointmentToDoctorDTO = new AppointmentToDoctorDTO();
         appointmentToDoctorDTO.setDate(appointment.getDate());
         appointmentToDoctorDTO.setTime(appointment.getTime());
-        appointmentToDoctorDTO.setDoctorFIO(appointment.getDoctor().getFio());
+        appointmentToDoctorDTO.setDoctorFirstName(appointment.getDoctor().getFirstName());
+        appointmentToDoctorDTO.setDoctorLastName(appointment.getDoctor().getLastName());
+        appointmentToDoctorDTO.setDoctorLastName(appointmentToDoctorDTO.getDoctorLastName());
         appointmentToDoctorDTO.setDoctorSpeciality(appointment.getDoctor().getSpeciality());
         return appointmentToDoctorDTO;
     }

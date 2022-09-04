@@ -9,6 +9,7 @@ import lombok.Data;
 @Data
 public class PatientDTO {
 
+    private String id;
     private String fio;
 
     private String sex;
@@ -25,6 +26,7 @@ public class PatientDTO {
 
     public static PatientDTO fromPatient(Patient patient) {
         PatientDTO patientDTO = new PatientDTO();
+        patientDTO.setId(String.valueOf(patient.getId()));
         patientDTO.setFio(patient.getFio());
         patientDTO.setSex(patient.getSex());
         patientDTO.setBirthday(patient.getBirthday());

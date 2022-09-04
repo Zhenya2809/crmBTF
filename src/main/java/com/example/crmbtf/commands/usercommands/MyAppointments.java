@@ -32,7 +32,7 @@ public class MyAppointments implements Command {
                 Instant yesterday = now.minus(1, ChronoUnit.DAYS);
                 Date myDate = Date.from(yesterday);
                 if (e.getDate().after(myDate)) {
-                    executionContext.replyMessage(e.getDoctor().getFio() + "\n" + e.getDate() + "\n" + e.getTime());
+                    executionContext.replyMessage(e.getDoctor().getFirstName()+" "+e.getDoctor().getLastName() + "\n" + e.getDate() + "\n" + e.getTime());
                 }
             });
             executionContext.setLocalState(null);

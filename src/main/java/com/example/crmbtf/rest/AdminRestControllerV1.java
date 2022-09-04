@@ -1,17 +1,11 @@
 package com.example.crmbtf.rest;
 
-import com.example.crmbtf.model.Doctor;
-import com.example.crmbtf.model.Patient;
-import com.example.crmbtf.model.Role;
+import com.example.crmbtf.model.*;
 import com.example.crmbtf.model.dto.AdminUserDto;
-import com.example.crmbtf.model.User;
 import com.example.crmbtf.model.dto.DoctorDto;
 import com.example.crmbtf.model.dto.PatientDTO;
 import com.example.crmbtf.model.dto.UserDto;
-import com.example.crmbtf.service.AppointmentService;
-import com.example.crmbtf.service.DoctorService;
-import com.example.crmbtf.service.PatientService;
-import com.example.crmbtf.service.UserService;
+import com.example.crmbtf.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,12 +25,15 @@ public class AdminRestControllerV1 {
     private final AppointmentService appointmentService;
     private final PatientService patientService;
 
+    private final PatientCardService patientCardService;
+
     @Autowired
-    public AdminRestControllerV1(UserService userService, DoctorService doctorService, AppointmentService appointmentService, PatientService patientService) {
+    public AdminRestControllerV1(UserService userService, DoctorService doctorService, AppointmentService appointmentService, PatientService patientService, PatientCardService patientCardService) {
         this.userService = userService;
         this.doctorService = doctorService;
         this.appointmentService = appointmentService;
         this.patientService = patientService;
+        this.patientCardService = patientCardService;
     }
 
     @GetMapping(value = "users/{id}")
@@ -63,13 +60,13 @@ public class AdminRestControllerV1 {
         }
         return ResponseEntity.ok(patientDTOList);
     }
+
     @GetMapping(value = "users/search")
     public ResponseEntity searchAllUser() {
 //HashMap<Long,User> userHashMap = new HashMap<>();
         List<UserDto> userDtoList = new ArrayList<>();
         List<User> userList = userService.findAll();
         for (User user : userList) {
-//            userHashMap.put(user.getId(),user);
             UserDto userDto = new UserDto();
             userDto.setEmail(user.getEmail());
             userDto.setUsername(user.getUsername());
@@ -82,15 +79,16 @@ public class AdminRestControllerV1 {
     }
 
     @GetMapping(value = "doctors/search")
-    public ResponseEntity searchAllDoctors() {
-//HashMap<Long,User> userHashMap = new HashMap<>();
+    public ResponseEntity<List<DoctorDto>> searchAllDoctors() {
         List<DoctorDto> doctorDtoList = new ArrayList<>();
         List<Doctor> doctors = doctorService.findAll();
 
         for (Doctor doctor : doctors) {
-            DoctorDto doctorDto = DoctorDto.fromDoctor(doctor);
-            doctorDtoList.add(doctorDto);
+            if (doctor != null) {
+                DoctorDto doctorDto = DoctorDto.fromDoctor(doctor);
+                doctorDtoList.add(doctorDto);
 
+            }
         }
         return ResponseEntity.ok(doctorDtoList);
     }
@@ -111,23 +109,32 @@ public class AdminRestControllerV1 {
         }
     }
 
-    @GetMapping(value = "doctors/delete/{id}")
-    public void deleteDoctorsById(@PathVariable(name = "id") Long id) {
-        Optional<Doctor> doctorById = doctorService.getDoctorById(id);
-        if (doctorById.isPresent()) {
+        @GetMapping(value = "patientCard/delete/{id}")
+    public void deletePatientCardById(@PathVariable(name = "id") Long id) {
+        patientCardService.delete(id);
+    }
+
+    @DeleteMapping(value = "doctors/delete/{id}")
+    public ResponseEntity<Void> deleteDoctorsById(@PathVariable(name = "id") Long id) {
+        try {
             doctorService.deleteDoctor(id);
+        }catch (Exception e){
+            e.printStackTrace();
         }
+            return ResponseEntity.noContent().build();
     }
 
     @PostMapping("saveDoctor")
     public ResponseEntity saveDoctor(@RequestBody DoctorDto requestDto) {
-        String s = doctorService.createDoctor(requestDto.getDoctorFIO(), requestDto.getSpeciality(), requestDto.getAbout(), requestDto.getLinkPhoto());
+        userService.userRegistration(requestDto.getLogin(),requestDto.getPassword(),requestDto.getRePassword(),requestDto.getDoctorFirstName(),requestDto.getDoctorLastName(),requestDto.getEmail());
+        User user = userService.findByUsername(requestDto.getLogin());
+        String s = doctorService.createDoctor(requestDto.getDoctorFirstName(),requestDto.getDoctorLastName(), requestDto.getSpeciality(), requestDto.getAbout(), requestDto.getLinkPhoto(),user);
+
         Map<Object, Object> response = new HashMap<>();
         response.put("result", s);
         return ResponseEntity.ok(response);
 
     }
-
 
 
     @PostMapping("users")

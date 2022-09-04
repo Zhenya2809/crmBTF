@@ -77,7 +77,7 @@ public class InlineTelegramBot {
             article.setInputMessageContent(messageContent);
             article.setId(doctor.getId().toString());
             article.setTitle(doctor.getSpeciality());
-            article.setDescription(doctor.getFio());
+            article.setDescription(doctor.getFirstName()+" "+doctor.getLastName());
             article.setThumbUrl(doctor.getPhoto());
             results.add(article);
 

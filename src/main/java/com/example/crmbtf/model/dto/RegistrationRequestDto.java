@@ -10,4 +10,5 @@ public class RegistrationRequestDto {
     private String email;
     private String password;
     private String rePassword;
+
 }

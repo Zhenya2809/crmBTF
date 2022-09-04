@@ -48,6 +48,7 @@ public class UserServiceImpl implements UserService {
 
         return registeredUser;
     }
+
     public List<String> freeTimeToAppointmentForDay(LocalDate day, Long docId, HashMap<Date, List<String>> dateAndTimeMap) {
         List<String> timeList = new ArrayList<>();
         timeList.add("08:00");
@@ -95,6 +96,7 @@ public class UserServiceImpl implements UserService {
         timeList.removeAll(list);
         return timeList;
     }
+
     @Override
     public List<User> getAll() {
         List<User> result = userRepository.findAll();
@@ -159,9 +161,9 @@ public class UserServiceImpl implements UserService {
         user.setCreated(date);
         user.setStatus(Status.ACTIVE);
         user.setPassword(passwordEncoder.encode(password));
-        user.setRoles(List.of(new Role(1L,"ROLE_USER")));
+        user.setRoles(List.of(new Role(1L, "ROLE_USER")));
         userRepository.save(user);
         log.info("IN userRegistration = user with username: {} successfully registred", username);
-        return "IN userRegistration = user with username: { "+username+" } successfully registred";
+        return "IN userRegistration = user with username: { " + username + " } successfully registred";
     }
 }

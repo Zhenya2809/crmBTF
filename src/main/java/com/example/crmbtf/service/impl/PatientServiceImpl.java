@@ -14,6 +14,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -55,7 +58,7 @@ public class PatientServiceImpl implements PatientService {
 
     }
 
-    public void createNew(String email,String fio) {
+    public void createNew(String email, String fio) {
         Patient patient = new Patient();
         patient.setEmail(email);
         patient.setFio(fio);
@@ -114,11 +117,26 @@ public class PatientServiceImpl implements PatientService {
             if (byEmail.isPresent()) {
                 Patient patient = byEmail.get();
                 log.info("IN updateProfile Patient:{} found", patient);
+
                 patient.setSex(patientUpdate.getSex());
-                patient.setBirthday(patientUpdate.getBirthday());
-                patient.setInsurancePolicy(patientUpdate.getInsurancePolicy());
-                patient.setPlaceOfResidence(patientUpdate.getPlaceOfResidence());
-                patient.setPhoneNumber(patientUpdate.getPhoneNumber());
+                if (patientUpdate.getBirthday()!=null) {
+
+                    long currentDateTime = Long.parseLong(patientUpdate.getBirthday());
+                    //creating Date from millisecond
+                    Date currentDate = new Date(currentDateTime);
+                    DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+                    patient.setBirthday(df.format(currentDate));
+
+                }
+                if (patientUpdate.getInsurancePolicy()!=null) {
+                    patient.setInsurancePolicy(patientUpdate.getInsurancePolicy());
+                }
+                if (patientUpdate.getPlaceOfResidence()!=null) {
+                    patient.setPlaceOfResidence(patientUpdate.getPlaceOfResidence());
+                }
+                if (patientUpdate.getPhoneNumber()!=null) {
+                    patient.setPhoneNumber(patientUpdate.getPhoneNumber());
+                }
                 patientRepository.save(patient);
             }
         }

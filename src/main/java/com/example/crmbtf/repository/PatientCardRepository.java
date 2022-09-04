@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface PatientCardRepository extends JpaRepository<PatientCard, Long> {
 
-    PatientCard findPatientCardById(Long id);
+    Optional<PatientCard> findPatientCardById(Long id);
     Optional<PatientCard> findPatientCardByPatient(Patient patient);
     PatientCard findPatientCardByPatientId(Long id);
 

@@ -1,6 +1,7 @@
 package com.example.crmbtf.service.impl;
 
 import com.example.crmbtf.model.Doctor;
+import com.example.crmbtf.model.User;
 import com.example.crmbtf.repository.DoctorRepository;
 import com.example.crmbtf.service.DoctorService;
 import lombok.extern.slf4j.Slf4j;
@@ -8,11 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.*;
 
 @Slf4j
 @Service
 @Configurable
+@Transactional
 public class DoctorServiceImpl implements DoctorService {
     private final DoctorRepository doctorRepository;
 
@@ -22,15 +25,17 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
-    public String createDoctor(String doctorFio, String speciality, String about, String photo) {
+    public String createDoctor(String doctorFirstName,String doctorLastName, String speciality, String about, String photo, User user) {
         Doctor doctor = new Doctor();
-        doctor.setFio(doctorFio);
+        doctor.setFirstName(doctorFirstName);
+        doctor.setLastName(doctorLastName);
         doctor.setSpeciality(speciality);
         doctor.setAbout(about);
         doctor.setPhoto(photo);
+        doctor.setUser(user);
         doctorRepository.save(doctor);
         log.info("IN created - doctor:{} successfully created", doctor);
-        return "Doctor :{" + doctor.getFio() + "} successfully created";
+        return "Doctor :{" + doctor.getLastName() + "} successfully created";
     }
 
     @Override
@@ -74,11 +79,13 @@ public class DoctorServiceImpl implements DoctorService {
         return result;
     }
 
-    @Override
-    public Doctor findDoctorByFio(String fio) {
 
-        Doctor doctor = doctorRepository.findDoctorsByFio(fio);
-        log.info("IN findDoctorByFio - doctor: {} found by fio: {}", doctor, fio);
+    /// ПЕРЕРОБИТЬ ЦЕЙ МЄТОД ХУЙНЯ СОБАЧА
+    @Override
+    public Doctor findDoctorByFio(String firstName) {
+
+        Doctor doctor = doctorRepository.findDoctorByFirstName(firstName);
+        log.info("IN findDoctorByFio - doctor: {} found by fio: {}", doctor, firstName);
         return doctor;
     }
 

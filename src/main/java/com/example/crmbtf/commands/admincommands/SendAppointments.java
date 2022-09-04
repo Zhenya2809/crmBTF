@@ -29,7 +29,7 @@ public class SendAppointments implements Command {
 
 
             Long chatId = e.getPatient().getChatId();
-            executionContext.sendMessageToUserWithId("Напоминаем у вас запись к: \n"+e.getDoctor().getFio() + "\n" + e.getDate() + "\n" + e.getTime(), String.valueOf(chatId));
+            executionContext.sendMessageToUserWithId("Напоминаем у вас запись к: \n"+e.getDoctor().getFirstName()+" "+e.getDoctor().getLastName() + "\n" + e.getDate() + "\n" + e.getTime(), String.valueOf(chatId));
         });
 
 

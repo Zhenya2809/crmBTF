@@ -19,8 +19,10 @@ public class Doctor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "doctor_id")
     private Long id;
-    @Column(name = "fio")
-    private String fio;
+    @Column(name = "firstName")
+    private String firstName;
+    @Column(name = "lastName")
+    private String lastName;
     @Column(name = "speciality")
     private String speciality;
     @Column(name = "about")
@@ -30,7 +32,11 @@ public class Doctor {
     @Column(name="telegramBotID")
     private String telegramBotID;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToOne(orphanRemoval = true)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "clientID")
     private Set<AppointmentToDoctors> appointmentToDoctors;
 

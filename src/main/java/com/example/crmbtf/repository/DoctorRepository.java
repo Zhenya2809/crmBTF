@@ -14,8 +14,7 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
     Optional<Doctor> findDoctorById(Long id);
 
     List<Doctor> findDoctorsBySpeciality(String speciality);
-
-    Doctor findDoctorsByFio(String fio);
+    Doctor findDoctorByFirstName(String firstName);
 
     @Query(value = "select * from t_doctor where lower(speciality) like %:speciality% and lower(fio) like %:fio% limit 50", nativeQuery = true)
     Collection<Doctor> searchDoctor(@Param("speciality") String speciality,

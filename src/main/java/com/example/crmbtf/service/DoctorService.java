@@ -1,6 +1,7 @@
 package com.example.crmbtf.service;
 
 import com.example.crmbtf.model.Doctor;
+import com.example.crmbtf.model.User;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
@@ -9,7 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface DoctorService {
-    String createDoctor(String doctorFio, String speciality, String about, String photo);
+    String createDoctor(String doctorFirstName, String doctorLastName, String speciality, String about, String photo, User user);
 
     Set<String> getDrSpeciality();
     void deleteDoctor(Long id);
