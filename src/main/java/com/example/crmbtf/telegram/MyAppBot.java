@@ -4,7 +4,7 @@ package com.example.crmbtf.telegram;
 
 import com.example.crmbtf.commands.Command;
 import com.example.crmbtf.model.TelegramUsers;
-import com.example.crmbtf.service.impl.*;
+import com.example.crmbtf.repository.impl.*;
 import com.example.crmbtf.telegram.inline.InlineTelegramBot;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -39,6 +39,8 @@ public class MyAppBot extends TelegramLongPollingBot {
     private InlineTelegramBot inlineTelegramBot;
     @Autowired
     private PatientServiceImpl patientService;
+    @Autowired
+    private QuestionnaireServiceImpl questionnaireService;
     @Autowired
     private InfoDataServiceImpl infoDataService;
     @Autowired
@@ -104,6 +106,7 @@ public class MyAppBot extends TelegramLongPollingBot {
                 context.setUserService(userService);
                 context.setPatientService(patientService);
                 context.setInfoDataService(infoDataService);
+                context.setQuestionnaireService(questionnaireService);
 
                 if (command != null) {
                     log.info(context.printDateAndState() + " start command: " + command.getClass().getSimpleName());

@@ -1,14 +1,12 @@
-package com.example.crmbtf.service.impl;
+package com.example.crmbtf.repository.impl;
 
 import com.example.crmbtf.model.Doctor;
 import com.example.crmbtf.model.User;
 import com.example.crmbtf.repository.DoctorRepository;
 import com.example.crmbtf.service.DoctorService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Service;
-
 import javax.transaction.Transactional;
 import java.util.*;
 
@@ -82,10 +80,10 @@ public class DoctorServiceImpl implements DoctorService {
 
     /// ПЕРЕРОБИТЬ ЦЕЙ МЄТОД ХУЙНЯ СОБАЧА
     @Override
-    public Doctor findDoctorByFio(String firstName) {
+    public Doctor findDoctorByFio(String firstName,String lastName) {
 
-        Doctor doctor = doctorRepository.findDoctorByFirstName(firstName);
-        log.info("IN findDoctorByFio - doctor: {} found by fio: {}", doctor, firstName);
+        Doctor doctor = doctorRepository.findDoctorByFio(firstName,lastName);
+        log.info("IN findDoctorByFio - doctor found by fio: {} {}", firstName,lastName);
         return doctor;
     }
 
@@ -94,5 +92,10 @@ public class DoctorServiceImpl implements DoctorService {
         Collection<Doctor> doctors = doctorRepository.searchDoctor(speciality, fio);
         log.info("IN searchDoctor by speciality:{} and fio:{} count:{} doctors found", speciality, fio, doctors.size());
         return doctors;
+    }
+
+    @Override
+    public List<String> getAllSpeciality() {
+        return doctorRepository.getAllSpeciality();
     }
 }

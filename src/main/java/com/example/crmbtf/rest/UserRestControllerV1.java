@@ -12,8 +12,6 @@ import com.example.crmbtf.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -127,7 +125,6 @@ public class UserRestControllerV1 {
 
     @GetMapping(value = "doctors/getSpeciality")
     public ResponseEntity<List<SpecialityDTO>> getDrSpeciality() {
-//HashMap<Long,User> userHashMap = new HashMap<>();
         Set<String> setSpeciality = doctorService.getDrSpeciality();
         List<String> drSpecialityDTO = new ArrayList<>(setSpeciality);
         List<SpecialityDTO> specDTOlist = new ArrayList<>();

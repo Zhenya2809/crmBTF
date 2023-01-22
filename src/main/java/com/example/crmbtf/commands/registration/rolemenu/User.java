@@ -22,6 +22,7 @@ public class User implements ChoseRole {
                     new ReplyButton("Специалисты"),
                     new ReplyButton("Услуги"),
                     new ReplyButton("Наш адрес"),
+                    new ReplyButton("Тести"),
                     new ReplyButton("Мои записи"));
 
             executionContext.buildReplyKeyboard("О, как так? Тогда нам есть о чем поговорить! \n" +

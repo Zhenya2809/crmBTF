@@ -21,6 +21,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String REGISTRATION_ENDPOINT = "/api/v1/users/registration";
     private static final String USER_ENDPOINT = "/api/v1/users/**";
 
+    private static final String DOCTOR_ENDPOINT = "/api/v1/doctor/**";
+
 
     @Autowired
     public SecurityConfig(JwtTokenProvider jwtTokenProvider) {
@@ -45,6 +47,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(ADMIN_ENDPOINT).hasRole("ADMIN")
                 .antMatchers(USER_ENDPOINT).hasRole("USER")
                 .antMatchers(LOGIN_ENDPOINT).permitAll()
+                .antMatchers(DOCTOR_ENDPOINT).hasRole("DOCTOR")
                 .anyRequest().authenticated()
                 .and()
                 .apply(new JwtConfigurer(jwtTokenProvider));

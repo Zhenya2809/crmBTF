@@ -1,6 +1,5 @@
-package com.example.crmbtf.service.impl;
+package com.example.crmbtf.repository.impl;
 
-import com.example.crmbtf.model.Doctor;
 import com.example.crmbtf.model.Patient;
 import com.example.crmbtf.model.PatientCard;
 import com.example.crmbtf.model.TreatmentInformation;

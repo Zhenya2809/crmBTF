@@ -1,4 +1,4 @@
-package com.example.crmbtf.service.impl;
+package com.example.crmbtf.repository.impl;
 
 import com.example.crmbtf.model.DaySchedule;
 import com.example.crmbtf.model.Role;
@@ -139,7 +139,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String userRegistration(String username, String password, String rePassword, String firstName, String lastName, String email) {
+    public String userRegistration(String username, String password, String rePassword, String firstName, String lastName, String email,Long id, String role) {
 
 
         Optional<User> result = userRepository.findByUsername(username);

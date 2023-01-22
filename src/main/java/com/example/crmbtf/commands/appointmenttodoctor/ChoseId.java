@@ -18,7 +18,10 @@ public class ChoseId implements Appointment {
 
         LocalDate today = LocalDate.now();
         String inputMessage = executionContext.getUpdate().getMessage().getText();
-        localStateForAppointment.setDoctorId(executionContext.getDoctorService().findDoctorByFio(inputMessage).getId());
+        String[] split = inputMessage.split(" ");
+        String firstName = split[0];
+        String lastName = split[1];
+        localStateForAppointment.setDoctorId(executionContext.getDoctorService().findDoctorByFio(firstName,lastName).getId());
         List<ReplyButton> replyButtons = List.of(new ReplyButton(today.toString()),
                 new ReplyButton(today.plusDays(1).toString()),
                 new ReplyButton(today.plusDays(2).toString()),

@@ -1,4 +1,4 @@
-package com.example.crmbtf.service.impl;
+package com.example.crmbtf.repository.impl;
 
 import com.example.crmbtf.model.TelegramUsers;
 import com.example.crmbtf.repository.TelegramUsersRepository;

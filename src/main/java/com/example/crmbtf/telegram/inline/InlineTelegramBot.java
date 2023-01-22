@@ -2,7 +2,7 @@ package com.example.crmbtf.telegram.inline;
 
 
 import com.example.crmbtf.model.Doctor;
-import com.example.crmbtf.service.impl.DoctorServiceImpl;
+import com.example.crmbtf.repository.impl.DoctorServiceImpl;
 import com.example.crmbtf.telegram.MyAppBot;
 import lombok.AllArgsConstructor;
 import lombok.Data;

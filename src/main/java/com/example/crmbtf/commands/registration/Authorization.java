@@ -32,11 +32,13 @@ public class Authorization implements Command {
             authorizationMap.put("get_email_and_phone_registration", new GetEmailRegistration());
             authorizationMap.put("authorized", new Authorized());
             Registration registration = authorizationMap.get(step);
-            if (registration == null) {
-                throw new RuntimeException("fail to find by step " + step);
-            }
-            registration.execute(executionContext);
 
+            if (registration == null) {
+                executionContext.getContactKeyboard();
+
+            } else {
+                registration.execute(executionContext);
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -44,7 +46,7 @@ public class Authorization implements Command {
 
     @Override
     public boolean shouldRunOnText(String text) {
-        return text.equals("Начнем \uD83D\uDE09")||(text.equals("Главное меню"));
+        return text.equals("Начнем \uD83D\uDE09") || (text.equals("Главное меню"));
     }
 
     @Override

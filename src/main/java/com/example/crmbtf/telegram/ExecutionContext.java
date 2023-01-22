@@ -7,6 +7,7 @@ import com.example.crmbtf.telegram.inline.InlineButton;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.telegram.telegrambots.meta.api.methods.polls.SendPoll;
 import org.telegram.telegrambots.meta.api.methods.send.SendLocation;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
@@ -18,9 +19,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
-import java.sql.Time;
+
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.*;
 
 @Getter
@@ -42,6 +42,7 @@ public class ExecutionContext {
     private UserService userService;
     private PatientService patientService;
     private InfoDataService infoDataService;
+    private QuestionnaireService questionnaireService;
 
     public void setGlobalState(TelegramUsers.botstate newState) {
         Optional<TelegramUsers> dataUserByChatId = telegramUsersService.findDataUserByChatId(chatId);
@@ -80,6 +81,14 @@ public class ExecutionContext {
     public void execute(SendPhoto sendPhoto) {
         try {
             myAppBot.execute(sendPhoto);
+        } catch (Exception e) {
+            throw new RuntimeException();
+        }
+    }
+
+    public void execute(SendPoll sendPool) {
+        try {
+            myAppBot.execute(sendPool);
         } catch (Exception e) {
             throw new RuntimeException();
         }
@@ -124,6 +133,11 @@ public class ExecutionContext {
         execute(message);
     }
 
+    public void create() {
+        questionnaireService.createQuestion("answer0", "answer1", "answer2",
+                "answer3", "what answer correct?", 1L);
+    }
+
     public void sendAll(String sendTEXT) {
         SendMessage message = new SendMessage();
         List<Long> chatIdList = telegramUsersService.findAll();
@@ -134,7 +148,6 @@ public class ExecutionContext {
         }
     }
 
-
     public void sendAddress(double longitude, double latitude) {
         SendLocation sendLocation = new SendLocation();
         sendLocation.setChatId(String.valueOf(chatId));
@@ -143,11 +156,25 @@ public class ExecutionContext {
         execute(sendLocation);
     }
 
+    public void createSendPoll(String answer0,String answer1,String answer2,String answer3, String questions, int correctAnswer) {
+        List<String> list= List.of(answer0,answer1,answer2,answer3);
+        SendPoll sendPoll = new SendPoll();
+        sendPoll.setType("quiz");
+        sendPoll.setCorrectOptionId(correctAnswer);
+        sendPoll.setOptions(list);
+        sendPoll.setIsAnonymous(false);
+        sendPoll.setExplanation("```Ти шо тупий?```");
+        sendPoll.setExplanationParseMode("MarkdownV2");
+        sendPoll.setChatId(chatId.toString());
+        sendPoll.setQuestion(questions);
+        execute(sendPoll);
+
+    }
+
     public void buildReplyKeyboard(String responseMessage, List<ReplyButton> buttonNames) {
         SendMessage message = new SendMessage();
         message.setChatId(String.valueOf(chatId));
         message.setText(responseMessage);
-
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         List<KeyboardRow> keyboardRowList = new ArrayList<>();
 

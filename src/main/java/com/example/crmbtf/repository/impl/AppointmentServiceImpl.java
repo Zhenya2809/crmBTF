@@ -1,4 +1,4 @@
-package com.example.crmbtf.service.impl;
+package com.example.crmbtf.repository.impl;
 
 import com.example.crmbtf.email.SendEmailTLS;
 import com.example.crmbtf.model.*;
@@ -35,32 +35,21 @@ public class AppointmentServiceImpl implements AppointmentService {
         this.userRepository = userRepository;
     }
 
-//    @Override
-//    public void createAppointmentToDoctors(String date, Time time, String doctorID) {
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//
-//        Optional<Patient> patientOptional = patientRepository.findByEmail(auth.getName());
-//
-//        if (patientOptional.isPresent()) {
-//            try {
-//                Patient patient = patientOptional.get();
-//                Optional<Doctor> doctorById = doctorRepository.findDoctorById(Long.valueOf(doctorID));
-//                if (doctorById.isPresent()) {
-//                    AppointmentToDoctors incoming = new AppointmentToDoctors();
-//                    incoming.setDate(java.sql.Date.valueOf(date));
-//                    incoming.setTime(time);
-//                    incoming.setDoctor(doctorById.get());
-//                    incoming.setPatient(patient);
-//
-//                    appointmentRepository.save(incoming);
-//                    log.info("IN createAppointment - appointment: {} successfully registered", incoming);
-//                }
-//            } catch (DataIntegrityViolationException e) {
-//                log.error(" ERROR ---->  this date/time/doctor already exists  <----");
-//            }
-//
-//        }
-//    }
+    @Override
+    public List<AppointmentToDoctors> getAppointmentForDoctor() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        String name = auth.getName();
+        Optional<User> byUsername = userRepository.findByUsername(name);
+        if (byUsername.isPresent()) {
+            Optional<Doctor> doctorById = doctorRepository.findDoctorById(byUsername.get().getId());
+            if (doctorById.isPresent()) {
+                Doctor doctor = doctorById.get();
+                return appointmentRepository.findAppointmentToDoctorsByDoctor(doctor);
+            }
+        }
+        throw new RuntimeException("Appointments not found");
+    }
 
     @Override
     public void createAppointmentToDoctorsByTelegram(String email, String date, String time, String doctorID, ExecutionContext executionContext) {

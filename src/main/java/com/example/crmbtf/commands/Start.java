@@ -17,6 +17,7 @@ public class Start implements Command {
 
         List<ReplyButton> replyButtonList = List.of(new ReplyButton("Начнем \uD83D\uDE09"),
                 new ReplyButton("Покажи свой сайт \uD83C\uDF10"),
+//                new ReplyButton("Теорка"),
                 new ReplyButton("О нас"));
 
         executionContext.buildReplyKeyboard("Привет " + executionContext.getFirstName() + "\n" +

@@ -11,12 +11,12 @@ import java.util.HashMap;
 import java.util.List;
 
 public interface AppointmentService {
-//    void createAppointmentToDoctors(String date, Time time, String doctorID);
     void createAppointmentToDoctorsByTelegram(String email, String date, String time, String doctorID, ExecutionContext executionContext);
     void createAppointmentToDoctorsBySite(String date, String time, Long doctorID);
     void sendEmailReminder();
     List<AppointmentToDoctors> findAll();
     Iterable<AppointmentToDoctors> findAppointmentToDoctorsByDoctor(Doctor doctor);
+    public List<AppointmentToDoctors> getAppointmentForDoctor();
     List<AppointmentToDoctors> findAllByDoctor_Id(Long id);
     HashMap<Date, List<String>> findAllAvailableTimeByDoctorId(Long id);
     List<AppointmentToDoctors> findAllByPatientId(Long id);

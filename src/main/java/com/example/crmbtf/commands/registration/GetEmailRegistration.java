@@ -14,9 +14,9 @@ public class GetEmailRegistration implements Registration {
             user.setEmail(inputMessage);
             executionContext.getTelegramUsersService().save(user);
             executionContext.getContactKeyboard();
-            executionContext.setLocalState("get_email_and_phone_registration");
+            executionContext.setLocalState("authorized");
         } else {
-            executionContext.replyMessage("Нажмите кнопку - поделиться номером телефона ⬇️");
+            executionContext.replyMessage("ввід помилковий, спробуйте ще раз");
         }
 
     }

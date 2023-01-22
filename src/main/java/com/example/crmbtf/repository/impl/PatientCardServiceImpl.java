@@ -1,4 +1,4 @@
-package com.example.crmbtf.service.impl;
+package com.example.crmbtf.repository.impl;
 
 import com.example.crmbtf.model.Patient;
 import com.example.crmbtf.model.PatientCard;
