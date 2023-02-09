@@ -68,7 +68,7 @@ public class AdminRestControllerV1 {
         for (User user : userList) {
             UserDto userDto = new UserDto();
             userDto.setEmail(user.getEmail());
-            userDto.setUsername(user.getUsername());
+            userDto.setPhone(user.getPhone());
             userDto.setId(user.getId());
             userDto.setFirstName(user.getFirstName());
             userDto.setLastName(user.getLastName());
@@ -126,7 +126,7 @@ public class AdminRestControllerV1 {
     @PostMapping("saveDoctor")
     public ResponseEntity saveDoctor(@RequestBody DoctorDto requestDto) {
         userService.userRegistration(requestDto.getLogin(),requestDto.getPassword(),requestDto.getRePassword(),requestDto.getDoctorFirstName(),requestDto.getDoctorLastName(),requestDto.getEmail(),3L,"ROLE_DOCTOR");
-        User user = userService.findByUsername(requestDto.getLogin());
+        User user = userService.findByPhone(requestDto.getLogin());
         String s = doctorService.createDoctor(requestDto.getDoctorFirstName(),requestDto.getDoctorLastName(), requestDto.getSpeciality(), requestDto.getAbout(), requestDto.getLinkPhoto(),user);
 
         Map<Object, Object> response = new HashMap<>();

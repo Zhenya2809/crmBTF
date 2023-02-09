@@ -1,8 +1,7 @@
 package com.example.crmbtf.commands.usercommands.list;
 
 import com.example.crmbtf.commands.Command;
-import com.example.crmbtf.model.Questionnaire;
-import com.example.crmbtf.model.TelegramUsers;
+import com.example.crmbtf.model.TelegramUser;
 import com.example.crmbtf.telegram.ExecutionContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -41,7 +40,7 @@ public class AlgoritmAndStructure implements Command {
     }
 
     @Override
-    public TelegramUsers.botstate getGlobalState() {
-        return TelegramUsers.botstate.ALGORITM_AND_STRUCTURE;
+    public TelegramUser.botstate getGlobalState() {
+        return TelegramUser.botstate.ALGORITM_AND_STRUCTURE;
     }
 }

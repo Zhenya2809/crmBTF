@@ -14,7 +14,7 @@ public class User implements ChoseRole {
     @Override
     public void execute(ExecutionContext executionContext) {
         log.info("SEND ROLE MENU - USER");
-        Patient patient = executionContext.getPatientService().findPatientByEmail(executionContext.getTelegramUsersService()
+        Patient patient = executionContext.getPatientService().findPatientByEmailE(executionContext.getTelegramUsersService()
                 .findDataUserByChatId(executionContext.getChatId()).get().getEmail(), executionContext);
         List<AppointmentToDoctors> allByPatientId = executionContext.getAppointmentService().findAllByPatientId(patient.getId());
         if (allByPatientId.size() > 0) {

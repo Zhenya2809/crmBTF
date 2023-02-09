@@ -3,7 +3,7 @@ package com.example.crmbtf.commands.usercommands;
 
 import com.example.crmbtf.commands.Command;
 import com.example.crmbtf.model.ReplyButton;
-import com.example.crmbtf.model.TelegramUsers;
+import com.example.crmbtf.model.TelegramUser;
 import com.example.crmbtf.service.DoctorService;
 import com.example.crmbtf.telegram.ExecutionContext;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +39,7 @@ public class Doctors implements Command {
     }
 
     @Override
-    public TelegramUsers.botstate getGlobalState() {
-        return TelegramUsers.botstate.DOCTORS;
+    public TelegramUser.botstate getGlobalState() {
+        return TelegramUser.botstate.DOCTORS;
     }
 }

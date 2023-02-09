@@ -28,7 +28,7 @@ public class ChoseDataToAppointment implements Appointment {
     }
 
     private void extracted(ExecutionContext executionContext, LocalDate today, Long docId) {
-        List<String> strings = executionContext.freeTimeToAppointmentForDay(today, docId);
+        List<String> strings = executionContext.freeTimeToAppointmentForDay(docId);
         executionContext.buildReplyKeyboardWithStringList("Выберите время", strings);
     }
 }

@@ -13,7 +13,7 @@ public interface UserService {
 
     List<User> getAll();
 
-    User findByUsername(String username);
+    User findByPhone(String phone);
 
     User findById(Long id);
 

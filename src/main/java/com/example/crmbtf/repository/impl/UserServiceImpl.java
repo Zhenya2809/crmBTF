@@ -8,11 +8,9 @@ import com.example.crmbtf.repository.RoleRepository;
 import com.example.crmbtf.repository.UserRepository;
 import com.example.crmbtf.service.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Singleton;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -105,10 +103,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findByUsername(String username) {
-        Optional<User> result = userRepository.findByUsername(username);
+    public User findByPhone(String phone) {
+        Optional<User> result = userRepository.findByPhone(phone);
         if (result.isPresent()) {
-            log.info("IN findByUsername - user: {} found by username: {}", result, username);
+            log.info("IN findByUsername - user: {} found by username: {}", result, phone);
             return result.get();
         } else
             throw new RuntimeException("user not found");
@@ -139,10 +137,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String userRegistration(String username, String password, String rePassword, String firstName, String lastName, String email,Long id, String role) {
+    public String userRegistration(String phone, String password, String rePassword, String firstName, String lastName, String email,Long id, String role) {
 
 
-        Optional<User> result = userRepository.findByUsername(username);
+        Optional<User> result = userRepository.findByPhone(phone);
         if (result.isPresent()) {
             log.error("A user with the same name already exists");
             return "A user with the same name already exists";
@@ -154,7 +152,7 @@ public class UserServiceImpl implements UserService {
         }
         Date date = new Date();
         User user = new User();
-        user.setUsername(username);
+        user.setPhone(phone);
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setEmail(email);
@@ -163,7 +161,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(password));
         user.setRoles(List.of(new Role(1L, "ROLE_USER")));
         userRepository.save(user);
-        log.info("IN userRegistration = user with username: {} successfully registred", username);
-        return "IN userRegistration = user with username: { " + username + " } successfully registred";
+        log.info("IN userRegistration = user with phone: {} successfully registred", phone);
+        return "IN userRegistration = user with phone: { " + phone + " } successfully registred";
     }
 }

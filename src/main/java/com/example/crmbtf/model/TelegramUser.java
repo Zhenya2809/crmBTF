@@ -11,9 +11,10 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "b_user")
-public class TelegramUsers {
+public class TelegramUser {
 
     @Id
+    @Column(name = "chatId", nullable = false)
     private Long chatId;
     @Column(name = "firstName")
     private String firstName;
@@ -25,16 +26,16 @@ public class TelegramUsers {
     @Column(name = "globalState")
     public botstate globalState;
     @Column(name = "email")
-    public String email;
+    private String email;
     @Column(name = "phone")
     private String phone;
     @Column(name = "role", columnDefinition = "varchar(20) default 'USER'")
     private String role;
-    @Column(name = "doctorId")
-    private Long doctorId;
+    @Column(name = "authorizationToken")
+    private String authorizationToken;
 
 
-    public TelegramUsers(Long chatId, String firstName, String lastName) {
+    public TelegramUser(Long chatId, String firstName, String lastName) {
         this.chatId = chatId;
         this.firstName = firstName;
         this.lastName = lastName;

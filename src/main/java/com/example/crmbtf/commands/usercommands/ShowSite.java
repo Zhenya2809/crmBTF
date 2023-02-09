@@ -2,7 +2,7 @@ package com.example.crmbtf.commands.usercommands;
 
 
 import com.example.crmbtf.commands.Command;
-import com.example.crmbtf.model.TelegramUsers;
+import com.example.crmbtf.model.TelegramUser;
 import com.example.crmbtf.telegram.ExecutionContext;
 import com.example.crmbtf.telegram.inline.InlineButton;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +29,7 @@ public class ShowSite implements Command {
     }
 
     @Override
-    public TelegramUsers.botstate getGlobalState() {
-        return TelegramUsers.botstate.SHOW_SITE;
+    public TelegramUser.botstate getGlobalState() {
+        return TelegramUser.botstate.SHOW_SITE;
     }
 }

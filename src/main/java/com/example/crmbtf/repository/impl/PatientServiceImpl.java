@@ -6,6 +6,7 @@ import com.example.crmbtf.model.User;
 import com.example.crmbtf.model.dto.PatientDTO;
 import com.example.crmbtf.model.dto.PatientUpdateDTO;
 import com.example.crmbtf.repository.PatientRepository;
+import com.example.crmbtf.repository.TelegramUsersRepository;
 import com.example.crmbtf.repository.UserRepository;
 import com.example.crmbtf.service.PatientService;
 import com.example.crmbtf.telegram.ExecutionContext;
@@ -24,16 +25,19 @@ import java.util.Optional;
 @Slf4j
 @Service
 public class PatientServiceImpl implements PatientService {
+    private final TelegramUsersRepository telegramUsersRepository;
 
 
     private final PatientRepository patientRepository;
     private final PatientCardServiceImpl patientCardService;
     private final UserRepository userRepository;
 
-    public PatientServiceImpl(PatientRepository patientRepository, PatientCardServiceImpl patientCardService, UserRepository userRepository) {
+    public PatientServiceImpl(PatientRepository patientRepository, PatientCardServiceImpl patientCardService, UserRepository userRepository,
+                              TelegramUsersRepository telegramUsersRepository) {
         this.patientRepository = patientRepository;
         this.patientCardService = patientCardService;
         this.userRepository = userRepository;
+        this.telegramUsersRepository = telegramUsersRepository;
     }
 
     @Override
@@ -65,7 +69,7 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public Patient findPatientByEmail(String email, ExecutionContext executionContext) {
+    public Patient findPatientByEmailE(String email, ExecutionContext executionContext) {
         Optional<Patient> byEmail = patientRepository.findByEmail(email);
         if (byEmail.isPresent()) {
             log.info("In fundPatientByEmail patient:{} found by email:{}", byEmail.get(), email);
@@ -81,6 +85,25 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
+    public Patient findPatientByEmailOrCreatePatient(String email, Long chatId) {
+        Optional<Patient> byEmail = patientRepository.findByEmail(email);
+        if (byEmail.isPresent()) {
+            log.info("In fundPatientByEmail patient:{} found by email:{}", byEmail.get(), email);
+            return byEmail.get();
+        }
+        Patient patient = new Patient();
+        patient.setChatId(chatId);
+        patient.setEmail(email);
+//        TelegramUsers dataUserByChatId = telegramUsersRepository.findDataUserByChatId(chatId);
+//        String firstName = dataUserByChatId.getFirstName();
+//        String lastName = dataUserByChatId.getLastName();
+//        patient.setFio(firstName + " " + lastName);
+        patientRepository.save(patient);
+        log.info("IN findPatientByEmail patient not found and created new patient with email:{}", email);
+        return patient;
+    }
+
+    @Override
     public List<Patient> findAll() {
         List<Patient> all = patientRepository.findAll();
         log.info("IN findAll - {} patient found", all.size());
@@ -91,7 +114,7 @@ public class PatientServiceImpl implements PatientService {
     public List<PatientDTO> getMyProfile() {
         List<PatientDTO> patientDTOList = new ArrayList<>();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Optional<User> byUsername = userRepository.findByUsername(auth.getName());
+        Optional<User> byUsername = userRepository.findByPhone(auth.getName());
         if (byUsername.isPresent()) {
             User user = byUsername.get();
             String email = user.getEmail();
@@ -108,7 +131,7 @@ public class PatientServiceImpl implements PatientService {
     @Override
     public void updateProfile(PatientUpdateDTO patientUpdate) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Optional<User> byUsername = userRepository.findByUsername(auth.getName());
+        Optional<User> byUsername = userRepository.findByPhone(auth.getName());
 
         if (byUsername.isPresent()) {
             User user = byUsername.get();
@@ -119,7 +142,7 @@ public class PatientServiceImpl implements PatientService {
                 log.info("IN updateProfile Patient:{} found", patient);
 
                 patient.setSex(patientUpdate.getSex());
-                if (patientUpdate.getBirthday()!=null) {
+                if (patientUpdate.getBirthday() != null) {
 
                     long currentDateTime = Long.parseLong(patientUpdate.getBirthday());
                     //creating Date from millisecond
@@ -128,13 +151,13 @@ public class PatientServiceImpl implements PatientService {
                     patient.setBirthday(df.format(currentDate));
 
                 }
-                if (patientUpdate.getInsurancePolicy()!=null) {
+                if (patientUpdate.getInsurancePolicy() != null) {
                     patient.setInsurancePolicy(patientUpdate.getInsurancePolicy());
                 }
-                if (patientUpdate.getPlaceOfResidence()!=null) {
+                if (patientUpdate.getPlaceOfResidence() != null) {
                     patient.setPlaceOfResidence(patientUpdate.getPlaceOfResidence());
                 }
-                if (patientUpdate.getPhoneNumber()!=null) {
+                if (patientUpdate.getPhoneNumber() != null) {
                     patient.setPhoneNumber(patientUpdate.getPhoneNumber());
                 }
                 patientRepository.save(patient);

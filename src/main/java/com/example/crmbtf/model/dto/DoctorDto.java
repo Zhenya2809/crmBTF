@@ -5,6 +5,9 @@ import com.example.crmbtf.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DoctorDto {
@@ -22,6 +25,8 @@ public class DoctorDto {
 
 
     public static DoctorDto fromDoctor(Doctor doctor) {
+
+
         DoctorDto doctorDto = new DoctorDto();
         doctorDto.setId(doctor.getId());
         doctorDto.setDoctorFirstName(doctor.getFirstName());
@@ -31,5 +36,14 @@ public class DoctorDto {
         doctorDto.setLinkPhoto(doctor.getPhoto());
 
         return doctorDto;
+    }
+
+    public static List<DoctorDto> fromDoctorList(List<Doctor> doctorList) {
+        List<DoctorDto> doctorDtoList = new ArrayList<>();
+        for (Doctor doctor : doctorList) {
+            DoctorDto doctorDto = fromDoctor(doctor);
+            doctorDtoList.add(doctorDto);
+        }
+        return doctorDtoList;
     }
 }

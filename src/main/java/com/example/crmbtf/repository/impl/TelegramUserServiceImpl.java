@@ -1,10 +1,9 @@
 package com.example.crmbtf.repository.impl;
 
-import com.example.crmbtf.model.TelegramUsers;
+import com.example.crmbtf.model.TelegramUser;
 import com.example.crmbtf.repository.TelegramUsersRepository;
 import com.example.crmbtf.service.TelegramUsersService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,31 +21,31 @@ public class TelegramUserServiceImpl implements TelegramUsersService {
     }
 
     @Override
-    public Optional<TelegramUsers> findDataUserByChatId(Long id) {
+    public Optional<TelegramUser> findDataUserByChatId(Long id) {
         return Optional.ofNullable(telegramUsersRepository.findDataUserByChatId(id));
     }
 
     @Override
     public Long getDoctorId(Long id) {
-        TelegramUsers dataUserByChatId = telegramUsersRepository.findDataUserByChatId(id);
-        return dataUserByChatId.getDoctorId();
+        TelegramUser dataUserByChatId = telegramUsersRepository.findDataUserByChatId(id);
+        return dataUserByChatId.getChatId();
     }
 
     @Override
     public void createUser(Long chatId, String firstName, String lastName, String role) {
-        TelegramUsers user = new TelegramUsers();
+        TelegramUser user = new TelegramUser();
         user.setChatId(chatId);
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setRole(role);
-        user.setGlobalState(TelegramUsers.botstate.START);
+        user.setGlobalState(TelegramUser.botstate.START);
         user.setLocaleState("Main_menu");
         telegramUsersRepository.save(user);
         log.info("user created : chatId=" + chatId + " firstName=" + firstName + " lastName=" + lastName);
     }
 
     @Override
-    public void save(TelegramUsers user) {
+    public void save(TelegramUser user) {
         telegramUsersRepository.save(user);
     }
 

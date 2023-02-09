@@ -2,7 +2,7 @@ package com.example.crmbtf.commands.registration;
 
 
 import com.example.crmbtf.commands.Command;
-import com.example.crmbtf.model.TelegramUsers;
+import com.example.crmbtf.model.TelegramUser;
 import com.example.crmbtf.telegram.ExecutionContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -18,7 +18,7 @@ public class Authorization implements Command {
 
         try {
             String localState = executionContext.getLocalState();
-            TelegramUsers authorizationUser = executionContext.getAuthorizationUser();
+            TelegramUser authorizationUser = executionContext.getAuthorizationUser();
 
             if ((authorizationUser.getEmail() != null) && (authorizationUser.getPhone() != null) && (localState == null)) {
                 executionContext.setLocalState("authorized");
@@ -50,7 +50,7 @@ public class Authorization implements Command {
     }
 
     @Override
-    public TelegramUsers.botstate getGlobalState() {
-        return TelegramUsers.botstate.START_BOT_CHATTING;
+    public TelegramUser.botstate getGlobalState() {
+        return TelegramUser.botstate.START_BOT_CHATTING;
     }
 }

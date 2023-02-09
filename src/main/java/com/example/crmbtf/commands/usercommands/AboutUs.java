@@ -3,14 +3,12 @@ package com.example.crmbtf.commands.usercommands;
 
 import com.example.crmbtf.commands.Command;
 import com.example.crmbtf.model.ReplyButton;
-import com.example.crmbtf.model.TelegramUsers;
+import com.example.crmbtf.model.TelegramUser;
 import com.example.crmbtf.telegram.ExecutionContext;
 import com.example.crmbtf.telegram.inline.InlineButton;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.polls.Poll;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -41,7 +39,7 @@ public class AboutUs implements Command {
     }
 
     @Override
-    public TelegramUsers.botstate getGlobalState() {
-        return TelegramUsers.botstate.ABOUT;
+    public TelegramUser.botstate getGlobalState() {
+        return TelegramUser.botstate.ABOUT;
     }
 }

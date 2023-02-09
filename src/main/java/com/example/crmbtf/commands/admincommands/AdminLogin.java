@@ -2,7 +2,7 @@ package com.example.crmbtf.commands.admincommands;
 
 
 import com.example.crmbtf.commands.Command;
-import com.example.crmbtf.model.TelegramUsers;
+import com.example.crmbtf.model.TelegramUser;
 import com.example.crmbtf.telegram.ExecutionContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -24,7 +24,7 @@ public class AdminLogin implements Command {
     }
 
     @Override
-    public TelegramUsers.botstate getGlobalState() {
-        return TelegramUsers.botstate.LOGIN;
+    public TelegramUser.botstate getGlobalState() {
+        return TelegramUser.botstate.LOGIN;
     }
 }

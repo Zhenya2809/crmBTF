@@ -3,7 +3,7 @@ package com.example.crmbtf.commands.appointmenttodoctor;
 
 import com.example.crmbtf.commands.Command;
 import com.example.crmbtf.commands.appointmenttodoctor.localstate.LocalStateForAppointment;
-import com.example.crmbtf.model.TelegramUsers;
+import com.example.crmbtf.model.TelegramUser;
 import com.example.crmbtf.telegram.ExecutionContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -59,7 +59,7 @@ public class AppointmentToDoctor implements Command {
 
 
     @Override
-    public TelegramUsers.botstate getGlobalState() {
-        return TelegramUsers.botstate.APPOINTMENT_TO_DOCTOR;
+    public TelegramUser.botstate getGlobalState() {
+        return TelegramUser.botstate.APPOINTMENT_TO_DOCTOR;
     }
 }

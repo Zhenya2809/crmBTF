@@ -3,7 +3,7 @@ package com.example.crmbtf.commands.admincommands;
 
 import com.example.crmbtf.commands.Command;
 import com.example.crmbtf.model.AppointmentToDoctors;
-import com.example.crmbtf.model.TelegramUsers;
+import com.example.crmbtf.model.TelegramUser;
 import com.example.crmbtf.service.AppointmentService;
 import com.example.crmbtf.telegram.ExecutionContext;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +41,7 @@ public class SendAppointments implements Command {
     }
 
     @Override
-    public TelegramUsers.botstate getGlobalState() {
-        return TelegramUsers.botstate.SEND_APPOINTMENT;
+    public TelegramUser.botstate getGlobalState() {
+        return TelegramUser.botstate.SEND_APPOINTMENT;
     }
 }

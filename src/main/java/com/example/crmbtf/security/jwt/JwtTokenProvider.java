@@ -1,6 +1,7 @@
 package com.example.crmbtf.security.jwt;
 
 import com.example.crmbtf.model.Role;
+import com.example.crmbtf.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
@@ -48,10 +49,25 @@ public class JwtTokenProvider {
         secret = Base64.getEncoder().encodeToString(secret.getBytes());
     }
 
-    public String createToken(String username, List<Role> roles) {
+    public String createToken(String phone, List<Role> roles) {
 
-        Claims claims = Jwts.claims().setSubject(username);
+        Claims claims = Jwts.claims().setSubject(phone);
         claims.put("roles", getRoleNames(roles));
+
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + validityInMilliseconds);
+
+        return Jwts.builder()//
+                .setClaims(claims)//
+                .setIssuedAt(now)//
+                .setExpiration(validity)//
+                .signWith(SignatureAlgorithm.HS256, secret)//
+                .compact();
+    }
+    public String createToken(String phone, String role) {
+
+        Claims claims = Jwts.claims().setSubject(phone);
+        claims.put("roles", role);
 
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);

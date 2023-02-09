@@ -30,7 +30,7 @@ import java.util.*;
 public class ExecutionContext {
 
     private MyAppBot myAppBot;
-    public TelegramUsers.botstate GlobalState;
+    public TelegramUser.botstate GlobalState;
     private Long chatId;
     private String firstName;
     private String lastName;
@@ -44,17 +44,17 @@ public class ExecutionContext {
     private InfoDataService infoDataService;
     private QuestionnaireService questionnaireService;
 
-    public void setGlobalState(TelegramUsers.botstate newState) {
-        Optional<TelegramUsers> dataUserByChatId = telegramUsersService.findDataUserByChatId(chatId);
+    public void setGlobalState(TelegramUser.botstate newState) {
+        Optional<TelegramUser> dataUserByChatId = telegramUsersService.findDataUserByChatId(chatId);
         if (dataUserByChatId.isPresent()) {
-            TelegramUsers userTg = dataUserByChatId.get();
+            TelegramUser userTg = dataUserByChatId.get();
             userTg.setGlobalState(newState);
             telegramUsersService.save(userTg);
         }
     }
 
-    public TelegramUsers getAuthorizationUser() {
-        Optional<TelegramUsers> dataUserByChatId = telegramUsersService.findDataUserByChatId(chatId);
+    public TelegramUser getAuthorizationUser() {
+        Optional<TelegramUser> dataUserByChatId = telegramUsersService.findDataUserByChatId(chatId);
         if (dataUserByChatId.isPresent()) {
             return dataUserByChatId.get();
         }
@@ -96,7 +96,7 @@ public class ExecutionContext {
 
     //LOCAL STATE
     public String getLocalState() {
-        Optional<TelegramUsers> dataUserByChatId = telegramUsersService.findDataUserByChatId(chatId);
+        Optional<TelegramUser> dataUserByChatId = telegramUsersService.findDataUserByChatId(chatId);
         if (dataUserByChatId.isEmpty()) {
             return "пользователь не найден";
         }
@@ -104,11 +104,11 @@ public class ExecutionContext {
     }
 
     public String setLocalState(String newState) {
-        Optional<TelegramUsers> dataUserByChatId = telegramUsersService.findDataUserByChatId(chatId);
+        Optional<TelegramUser> dataUserByChatId = telegramUsersService.findDataUserByChatId(chatId);
         if (dataUserByChatId.isPresent()) {
-            TelegramUsers telegramUsers = dataUserByChatId.get();
-            telegramUsers.setLocaleState(newState);
-            telegramUsersService.save(telegramUsers);
+            TelegramUser telegramUser = dataUserByChatId.get();
+            telegramUser.setLocaleState(newState);
+            telegramUsersService.save(telegramUser);
         }
         return newState;
     }
@@ -156,8 +156,8 @@ public class ExecutionContext {
         execute(sendLocation);
     }
 
-    public void createSendPoll(String answer0,String answer1,String answer2,String answer3, String questions, int correctAnswer) {
-        List<String> list= List.of(answer0,answer1,answer2,answer3);
+    public void createSendPoll(String answer0, String answer1, String answer2, String answer3, String questions, int correctAnswer) {
+        List<String> list = List.of(answer0, answer1, answer2, answer3);
         SendPoll sendPoll = new SendPoll();
         sendPoll.setType("quiz");
         sendPoll.setCorrectOptionId(correctAnswer);
@@ -284,7 +284,8 @@ public class ExecutionContext {
         execute(sendPhoto);
     }
 
-    public List<String> freeTimeToAppointmentForDay(LocalDate day, Long docId) {
+    public List<String> freeTimeToAppointmentForDay(Long docId) {
+        LocalDate day = LocalDate.now();
         List<String> timeList = new ArrayList<>();
         timeList.add("08:00");
         timeList.add("09:00");
@@ -332,19 +333,19 @@ public class ExecutionContext {
         return timeList;
     }
 
-    public void createAppointmentToDoctor(LocalDate day, String time, String docId, ExecutionContext executionContext) {
+//    public void createAppointmentToDoctor(LocalDate day, String time, String docId, TelegramUser user) {
+//
+//        String email = telegramUsersService.findDataUserByChatId(getChatId()).get().getEmail();
+//        appointmentService.createAppointmentToDoctorsByTelegram(email, day.toString(), time, docId, user);
+//        replyMessage(getFirstName() + " ты записан " + day + " на " + time + "\n с нетерпение ждём тебя");
+//        List<String> buttonsNameList = List.of("Наш адрес", "Услуги", "Специалисты", "Контакты", "Главное меню");
+//        buildReplyKeyboardWithStringList("Возможно я готов помочь тебе ещё?", buttonsNameList);
+//        setGlobalState(null);
+//        setLocalState(null);
+//    }
 
-        String email = telegramUsersService.findDataUserByChatId(getChatId()).get().getEmail();
-        appointmentService.createAppointmentToDoctorsByTelegram(email, day.toString(), time, docId, executionContext);
-        replyMessage(getFirstName() + " ты записан " + day + " на " + time + "\n с нетерпение ждём тебя");
-        List<String> buttonsNameList = List.of("Наш адрес", "Услуги", "Специалисты", "Контакты", "Главное меню");
-        buildReplyKeyboardWithStringList("Возможно я готов помочь тебе ещё?", buttonsNameList);
-        setGlobalState(null);
-        setLocalState(null);
-    }
-
-    public TelegramUsers getUser() {
-        Optional<TelegramUsers> dataUserByChatId = telegramUsersService.findDataUserByChatId(chatId);
+    public TelegramUser getUser() {
+        Optional<TelegramUser> dataUserByChatId = telegramUsersService.findDataUserByChatId(chatId);
         if (dataUserByChatId.isPresent()) {
             return dataUserByChatId.get();
         }

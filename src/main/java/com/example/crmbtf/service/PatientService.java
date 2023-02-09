@@ -16,8 +16,8 @@ public interface PatientService {
 
     void createNew(String email,String fio);
 
-    Patient findPatientByEmail(String email, ExecutionContext executionContext);
-
+    Patient findPatientByEmailE(String email, ExecutionContext executionContext);
+    Patient findPatientByEmailOrCreatePatient(String email, Long chatId);
     List<Patient> findAll();
 
     void updateProfile(PatientUpdateDTO patientUpdate);

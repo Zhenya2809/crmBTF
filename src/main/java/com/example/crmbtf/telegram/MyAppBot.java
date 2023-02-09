@@ -1,9 +1,8 @@
 package com.example.crmbtf.telegram;
 
 
-
 import com.example.crmbtf.commands.Command;
-import com.example.crmbtf.model.TelegramUsers;
+import com.example.crmbtf.model.TelegramUser;
 import com.example.crmbtf.repository.impl.*;
 import com.example.crmbtf.telegram.inline.InlineTelegramBot;
 import lombok.extern.slf4j.Slf4j;
@@ -11,16 +10,12 @@ import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
-import javax.annotation.PostConstruct;
 import java.util.*;
 
 
@@ -46,7 +41,7 @@ public class MyAppBot extends TelegramLongPollingBot {
     @Autowired
     public List<Command> commands;
 
-    public HashMap<Long, TelegramUsers> user = new HashMap<>();
+    public HashMap<Long, TelegramUser> user = new HashMap<>();
 
     @Override
     public String getBotUsername() {
@@ -82,7 +77,7 @@ public class MyAppBot extends TelegramLongPollingBot {
                     dataUserService.createUser(chatId, firstName, lastName, "USER");
                 }
 
-                user.computeIfAbsent(chatId, a -> new TelegramUsers(chatId, firstName, lastName));
+                user.computeIfAbsent(chatId, a -> new TelegramUser(chatId, firstName, lastName));
                 Command command = null;
                 for (Command choseCommand : commands) {
                     if (inputText != null) {
@@ -123,7 +118,7 @@ public class MyAppBot extends TelegramLongPollingBot {
     }
 
     public boolean CheckLoggin(Long chatId) {
-        Optional<TelegramUsers> dataUserByChatId = dataUserService.findDataUserByChatId(chatId);
+        Optional<TelegramUser> dataUserByChatId = dataUserService.findDataUserByChatId(chatId);
         return dataUserByChatId.isPresent();
     }
 
@@ -131,7 +126,7 @@ public class MyAppBot extends TelegramLongPollingBot {
     public void registerContactNumber(Update update, String phoneNumber) {
         try {
             System.out.println(phoneNumber);
-            TelegramUsers user = dataUserService.findDataUserByChatId(update.getMessage().getChatId()).get();
+            TelegramUser user = dataUserService.findDataUserByChatId(update.getMessage().getChatId()).get();
             user.setPhone(phoneNumber);
             dataUserService.save(user);
 
@@ -156,12 +151,11 @@ public class MyAppBot extends TelegramLongPollingBot {
         }
     }
 
-    @PostConstruct
-
-    public void register() throws TelegramApiException {
-        TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
-        botsApi.registerBot(this);
-    }
+//    @PostConstruct
+//    public void register() throws TelegramApiException {
+//        TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
+//        botsApi.registerBot(this);
+//    }
 
 
 }

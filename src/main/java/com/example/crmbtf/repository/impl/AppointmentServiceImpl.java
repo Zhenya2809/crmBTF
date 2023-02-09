@@ -2,45 +2,46 @@ package com.example.crmbtf.repository.impl;
 
 import com.example.crmbtf.email.SendEmailTLS;
 import com.example.crmbtf.model.*;
-import com.example.crmbtf.repository.AppointmentRepository;
-import com.example.crmbtf.repository.DoctorRepository;
-import com.example.crmbtf.repository.PatientRepository;
-import com.example.crmbtf.repository.UserRepository;
+import com.example.crmbtf.repository.*;
 import com.example.crmbtf.service.AppointmentService;
-import com.example.crmbtf.telegram.ExecutionContext;
+import com.example.crmbtf.service.TelegramUsersService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.sql.Time;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
 @Service
 @Slf4j
 public class AppointmentServiceImpl implements AppointmentService {
+    private final TelegramUsersRepository telegramUsersRepository;
     private final AppointmentRepository appointmentRepository;
     private final PatientRepository patientRepository;
     private final DoctorRepository doctorRepository;
-
+    private final TelegramUsersService telegramUsersService;
     private final UserRepository userRepository;
 
 
-    public AppointmentServiceImpl(AppointmentRepository appointmentRepository, PatientRepository patientRepository, DoctorRepository doctorRepository, UserRepository userRepository) {
+    public AppointmentServiceImpl(AppointmentRepository appointmentRepository, PatientRepository patientRepository, DoctorRepository doctorRepository, UserRepository userRepository,
+                                  TelegramUsersRepository telegramUsersRepository, TelegramUsersService telegramUsersService) {
         this.appointmentRepository = appointmentRepository;
         this.patientRepository = patientRepository;
         this.doctorRepository = doctorRepository;
         this.userRepository = userRepository;
+        this.telegramUsersRepository = telegramUsersRepository;
+        this.telegramUsersService = telegramUsersService;
     }
 
     @Override
     public List<AppointmentToDoctors> getAppointmentForDoctor() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        String name = auth.getName();
-        Optional<User> byUsername = userRepository.findByUsername(name);
+        String phone = auth.getName();
+        Optional<User> byUsername = userRepository.findByPhone(phone);
         if (byUsername.isPresent()) {
             Optional<Doctor> doctorById = doctorRepository.findDoctorById(byUsername.get().getId());
             if (doctorById.isPresent()) {
@@ -52,8 +53,14 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public void createAppointmentToDoctorsByTelegram(String email, String date, String time, String doctorID, ExecutionContext executionContext) {
-        Optional<Patient> patientOptional = patientRepository.findByEmail(email);
+    public void createAppointmentToDoctorsByTelegram( String date, String time, String doctorID, Long chatId) {
+
+
+        Optional<TelegramUser> dataUserByChatId = telegramUsersService.findDataUserByChatId(chatId);
+
+
+
+        Optional<Patient> patientOptional = patientRepository.findByEmail(dataUserByChatId.get().getEmail());
 
         if (patientOptional.isPresent()) {
 
@@ -63,19 +70,21 @@ public class AppointmentServiceImpl implements AppointmentService {
                 AppointmentToDoctors incoming = new AppointmentToDoctors();
                 incoming.setDate(java.sql.Date.valueOf(date));
                 incoming.setTime(LocalTime.parse(time));
-                incoming.setDoctor(doctorById.get());
+                 incoming.setDoctor(doctorById.get());
                 incoming.setPatient(patient);
                 appointmentRepository.save(incoming);
                 log.info("IN createAppointment - appointment: {} successfully registered", incoming);
             }
         } else {
-            TelegramUsers user = executionContext.getAuthorizationUser();
+
             Patient patient = new Patient();
-            patient.setChatId(executionContext.getChatId());
-            patient.setFio(user.getFirstName() + " " + user.getLastName());
-            patient.setEmail(user.getEmail());
-            patient.setPhoneNumber(user.getPhone());
-            executionContext.getPatientService().save(patient);
+            patient.setChatId(dataUserByChatId.get().getChatId());
+            patient.setFio(dataUserByChatId.get().getFirstName() + " " + dataUserByChatId.get().getLastName());
+            patient.setEmail(dataUserByChatId.get().getEmail());
+            patient.setPhoneNumber(dataUserByChatId.get().getPhone());
+            patientRepository.save(patient);
+            log.info("patient saved");
+
 
             Optional<Doctor> doctorById = doctorRepository.findDoctorById(Long.valueOf(doctorID));
             if (doctorById.isPresent()) {
@@ -94,7 +103,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     public void createAppointmentToDoctorsBySite(String date, String time, Long doctorID) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Patient patient;
-        Optional<User> byUsername = userRepository.findByUsername(auth.getName());
+        Optional<User> byUsername = userRepository.findByPhone(auth.getName());
         if (byUsername.isPresent()) {
             String email = byUsername.get().getEmail();
             Optional<Patient> byEmail = patientRepository.findByEmail(email);
@@ -163,12 +172,6 @@ public class AppointmentServiceImpl implements AppointmentService {
         return result;
     }
 
-    @Override
-    public HashMap<Date, List<String>> findAllAvailableTimeByDoctorId(Long id) {
-        List<AppointmentToDoctors> allByDoctor_id = appointmentRepository.findAllByDoctor_Id(id);
-        log.info("IN findAllAvailableTimeByDocId - time: {} found by id: {}", allByDoctor_id, id);
-        return listToMap(allByDoctor_id);
-    }
 
     @Override
     public List<AppointmentToDoctors> findAllByPatientId(Long id) {
@@ -180,7 +183,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     public List<AppointmentToDoctors> getUserAppointment() {
         List<AppointmentToDoctors> appointmentToDoctors = new ArrayList<>();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Optional<User> byUsername = userRepository.findByUsername(auth.getName());
+        Optional<User> byUsername = userRepository.findByPhone(auth.getName());
         if (byUsername.isPresent()) {
             User user = byUsername.get();
             Optional<Patient> byEmail = patientRepository.findByEmail(user.getEmail());
@@ -191,6 +194,20 @@ public class AppointmentServiceImpl implements AppointmentService {
         }
 
         return appointmentToDoctors;
+    }
+
+    @Override
+    public List<AppointmentToDoctors> getTelegramAppointment(Long chatId) {
+        List<AppointmentToDoctors> appointmentToDoctors = new ArrayList<>();
+        TelegramUser dataUserByChatId = telegramUsersRepository.findDataUserByChatId(chatId);
+        String phone = dataUserByChatId.getPhone();
+        Optional<User> byPhone = userRepository.findByPhone(phone);
+        if (byPhone.isPresent()) {
+            User user = byPhone.get();
+
+        }
+
+        return null;
     }
 
     @Override
@@ -214,6 +231,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         }
     }
 
+
     public static HashMap<Date, List<String>> listToMap(List<AppointmentToDoctors> list) {
         HashMap<Date, List<String>> map = new HashMap<>();
         for (AppointmentToDoctors appointment : list) {
@@ -228,4 +246,123 @@ public class AppointmentServiceImpl implements AppointmentService {
         }
         return map;
     }
+
+    @Override
+    public HashMap<Date, List<String>> findAllAvailableTimeByDoctorId(Long id) {
+        List<AppointmentToDoctors> allByDoctor_id = appointmentRepository.findAllByDoctor_Id(id);
+        log.info("IN findAllAvailableTimeByDocId - time: {} found by id: {}", allByDoctor_id, id);
+        return listToMap(allByDoctor_id);
+    }
+
+    @Override
+    public List<String> freeTimeToAppointmentForDay(Long docId) {
+        LocalDate day = LocalDate.now();
+        List<String> timeList = new ArrayList<>();
+        timeList.add("08:00");
+        timeList.add("09:00");
+        timeList.add("10:00");
+        timeList.add("11:00");
+        timeList.add("12:00");
+        timeList.add("13:00");
+        timeList.add("14:00");
+        timeList.add("15:00");
+        timeList.add("16:00");
+        timeList.add("17:00");
+        timeList.add("18:00");
+        timeList.add("19:00");
+        HashMap<Date, List<String>> dateAndTimeMap = findAllAvailableTimeByDoctorId(docId);
+        LocalDate today = LocalDate.now();
+        ArrayList<DaySchedule> daySchedules = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            LocalDate localDate = today.plusDays(i);
+            DaySchedule daySchedule = new DaySchedule();
+            String key = localDate.toString();
+            daySchedule.setDate(key);
+            if (dateAndTimeMap.get(java.sql.Date.valueOf(key)) != null) {
+                daySchedule.setAvailable(new HashSet<>(dateAndTimeMap.get(java.sql.Date.valueOf(key))));
+            } else {
+                daySchedule.setAvailable(new HashSet<>());
+            }
+            daySchedules.add(daySchedule);
+
+        }
+        List<String> listToday = new ArrayList<>();
+
+        daySchedules.forEach(e -> {
+            String date = e.getDate();
+            HashSet<String> available = e.getAvailable();
+            if (date.equals(day.toString())) {
+                listToday.addAll(available);
+            }
+        });
+        List<String> list = listToday.stream().map(e -> {
+            String[] split = e.split(":");
+            return split[0] + ":" + split[1];
+        }).toList();
+
+        timeList.removeAll(list);
+        return timeList;
+    }
+
+//    public void createAppointmentToDoctor(LocalDate day, String time, String email, String docId, TelegramUser users) {
+//
+////        String email = telegramUsersService.findDataUserByChatId(getChatId()).get().getEmail();
+//        createAppointmentToDoctorsByTelegram(email, day.toString(), time, docId, users);
+//
+////        replyMessage(users.getFirstName() + " ты записан " + day + " на " + time + "\n с нетерпение ждём тебя");
+////        List<String> buttonsNameList = List.of("Наш адрес", "Услуги", "Специалисты", "Контакты", "Главное меню");
+////        buildReplyKeyboardWithStringList("Возможно я готов помочь тебе ещё?", buttonsNameList);
+//
+//    }
+
+    public List<String> findAllAvailableTimeByDoctorId(LocalDate day, Long docId) {
+        List<String> timeList = new ArrayList<>();
+        timeList.add("08:00");
+        timeList.add("09:00");
+        timeList.add("10:00");
+        timeList.add("11:00");
+        timeList.add("12:00");
+        timeList.add("13:00");
+        timeList.add("14:00");
+        timeList.add("15:00");
+        timeList.add("16:00");
+        timeList.add("17:00");
+        timeList.add("18:00");
+        timeList.add("19:00");
+
+        HashMap<Date, List<String>> dateAndTimeMap = listToMap(appointmentRepository.findAllByDoctor_Id(docId));
+
+        LocalDate today = LocalDate.now();
+        ArrayList<DaySchedule> daySchedules = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            LocalDate localDate = today.plusDays(i);
+            DaySchedule daySchedule = new DaySchedule();
+            String key = localDate.toString();
+            daySchedule.setDate(key);
+            if (dateAndTimeMap.get(java.sql.Date.valueOf(key)) != null) {
+                daySchedule.setAvailable(new HashSet<>(dateAndTimeMap.get(java.sql.Date.valueOf(key))));
+            } else {
+                daySchedule.setAvailable(new HashSet<>());
+            }
+            daySchedules.add(daySchedule);
+
+        }
+        List<String> listToday = new ArrayList<>();
+
+        daySchedules.forEach(e -> {
+            String date = e.getDate();
+            HashSet<String> available = e.getAvailable();
+            if (date.equals(day.toString())) {
+                listToday.addAll(available);
+            }
+        });
+        List<String> list = listToday.stream().map(e -> {
+            String[] split = e.split(":");
+            return split[0] + ":" + split[1];
+        }).toList();
+
+        timeList.removeAll(list);
+        return timeList;
+    }
+
 }
