@@ -2,7 +2,6 @@ package com.example.crmbtf.service;
 
 import com.example.crmbtf.model.AppointmentToDoctors;
 import com.example.crmbtf.model.Doctor;
-import com.example.crmbtf.model.TelegramUser;
 
 import java.util.Date;
 import java.util.HashMap;

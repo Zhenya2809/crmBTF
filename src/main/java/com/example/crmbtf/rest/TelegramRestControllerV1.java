@@ -2,7 +2,6 @@ package com.example.crmbtf.rest;
 
 import com.example.crmbtf.model.*;
 import com.example.crmbtf.model.dto.*;
-import com.example.crmbtf.repository.UserRepository;
 import com.example.crmbtf.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,23 +17,18 @@ import java.util.Optional;
 @RestController
 @RequestMapping(value = "/api/v1/telegram/")
 public class TelegramRestControllerV1 {
-    private final UserRepository userRepository;
-    private final UserService userService;
     private final DoctorService doctorService;
     private final PatientService patientService;
     private final AppointmentService appointmentService;
     private final TelegramUsersService telegramUsersService;
 
     @Autowired
-    public TelegramRestControllerV1(UserService userService, DoctorService doctorService, PatientService patientService, AppointmentService appointmentService, TelegramUsersService telegramUsersService,
-                                    UserRepository userRepository) {
-        this.userService = userService;
+    public TelegramRestControllerV1(DoctorService doctorService, PatientService patientService, AppointmentService appointmentService, TelegramUsersService telegramUsersService) {
         this.doctorService = doctorService;
 
         this.patientService = patientService;
         this.appointmentService = appointmentService;
         this.telegramUsersService = telegramUsersService;
-        this.userRepository = userRepository;
     }
 
     @GetMapping(value = "/getAppointmentsToDoctor/{chatId}")
@@ -102,15 +96,4 @@ public class TelegramRestControllerV1 {
         //appointmentService.createAppointmentToDoctorsByTelegram()
         return ResponseEntity.ok(null);
     }
-
-
-//    @GetMapping(value = "/getAllAvailableTimeByDoctorId/{doctId}/{day}")
-//    public ResponseEntity<List<String>> getAvailableTime(@PathVariable(name = "doctId") String doctId,
-//                                                         @PathVariable(name = "day") String day) {
-//        LocalDate localDate = LocalDate.parse(day);
-//
-//        List<String> stringList = executionContext.freeTimeToAppointmentForDay(localDate, Long.valueOf(doctId));
-//        return ResponseEntity.ok(stringList);
-//findDoctorByFio
-//    }
 }

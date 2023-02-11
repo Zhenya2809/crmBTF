@@ -38,7 +38,6 @@ public class InlineTelegramBot {
             myAppBot.execute(convertResultsToResponse(inlineQuery));
         } catch (Throwable e) {
             log.error(e.getLocalizedMessage(), e);
-            e.printStackTrace();
         }
     }
 

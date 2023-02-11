@@ -20,7 +20,6 @@ public class AppointmentToDoctor implements Command {
     public void doCommand(ExecutionContext executionContext) {
 
         try {
-
             String localState = executionContext.getLocalState();
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.findAndRegisterModules();

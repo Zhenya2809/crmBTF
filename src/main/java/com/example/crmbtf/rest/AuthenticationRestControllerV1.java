@@ -6,6 +6,7 @@ import com.example.crmbtf.model.TelegramUser;
 import com.example.crmbtf.model.dto.AuthenticationRequestDto;
 import com.example.crmbtf.model.User;
 import com.example.crmbtf.model.dto.TelegramUserDto;
+import com.example.crmbtf.model.dto.UserDto;
 import com.example.crmbtf.repository.UserRepository;
 import com.example.crmbtf.security.jwt.JwtTokenProvider;
 import com.example.crmbtf.service.UserService;
@@ -91,22 +92,25 @@ public class AuthenticationRestControllerV1 {
     }
 
     @PostMapping(value = "createacc")
-    public ResponseEntity<User> createAccount(@RequestBody TelegramUserDto telegramUser) {
+    public ResponseEntity<UserDto> createAccount(@RequestBody TelegramUserDto telegramUser) {
         User user = new User();
+
         user.setEmail(telegramUser.getEmail());
         user.setRoles(List.of(new Role(1L, "ROLE_USER")));
         user.setPhone(telegramUser.getPhone());
         user.setFirstName(telegramUser.getFirstName());
         user.setLastName(telegramUser.getLastName());
         user.setStatus(Status.ACTIVE);
+        UserDto userDto = UserDto.fromUser(user);
         Optional<User> byPhone = userRepository.findByPhone(telegramUser.getPhone());
+
         if (byPhone.isPresent()) {
             log.info("user is present");
-            return ResponseEntity.ok(byPhone.get());
+            return ResponseEntity.ok(UserDto.fromUser(byPhone.get()));
         } else {
             userRepository.save(user);
             log.info("account to userPhone: {} created", user.getPhone());
-            return ResponseEntity.ok(user);
+            return ResponseEntity.ok(userDto);
         }
     }
 }
