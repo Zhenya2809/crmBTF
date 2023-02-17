@@ -22,6 +22,11 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private static final String LOWERCASE_CHARACTERS = "abcdefghijklmnopqrstuvwxyz";
+    private static final String UPPERCASE_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static final String NUMBERS = "0123456789";
+    private static final String SPECIAL_CHARACTERS = "!@#$%^&*()_+~`|}{[]:;?><,./-=";
+    private static final String ALL_CHARACTERS = LOWERCASE_CHARACTERS + UPPERCASE_CHARACTERS + NUMBERS + SPECIAL_CHARACTERS;
 
 
     public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, BCryptPasswordEncoder passwordEncoder) {
@@ -113,6 +118,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public String randomPassword() {
+        int passwordLength = 10;
+        return generateRandomPassword(passwordLength);
+    }
+    public static String generateRandomPassword(int length) {
+        Random random = new Random();
+        StringBuilder password = new StringBuilder();
+
+        for (int i = 0; i < length; i++) {
+            int randomIndex = random.nextInt(ALL_CHARACTERS.length());
+            password.append(ALL_CHARACTERS.charAt(randomIndex));
+        }
+
+        return password.toString();
+    }
+    @Override
     public User findById(Long id) {
         User result = userRepository.findById(id).orElse(null);
 
@@ -137,7 +158,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String userRegistration(String phone, String password, String rePassword, String firstName, String lastName, String email,Long id, String role) {
+    public String userRegistration(String phone, String password, String rePassword, String firstName, String lastName, String email, Long id, String role) {
 
 
         Optional<User> result = userRepository.findByPhone(phone);

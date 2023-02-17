@@ -8,7 +8,7 @@ import javax.mail.internet.MimeMultipart;
 import java.util.Properties;
 
 public class SendEmailTLS {
-    public void SendEmail(String subjectMessage, String addressTo, String textOfMessage) {
+    public static void SendEmail(String subjectMessage, String addressTo, String textOfMessage) {
         try {
             final String username = "recautosystem@gmail.com";
             final String password = "bfhodqkpdlnebkaz";

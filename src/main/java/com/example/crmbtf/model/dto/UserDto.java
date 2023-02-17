@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 
-
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UserDto {
@@ -15,14 +14,16 @@ public class UserDto {
     private String lastName;
     private String email;
 
-    public User toUser(){
+    private String password;
+
+    public User toUser() {
         User user = new User();
         user.setId(id);
         user.setPhone(phone);
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setEmail(email);
-
+        user.setPassword(password);
         return user;
     }
 
@@ -33,6 +34,7 @@ public class UserDto {
         userDto.setFirstName(user.getFirstName());
         userDto.setLastName(user.getLastName());
         userDto.setEmail(user.getEmail());
+        userDto.setPassword(user.getPassword());
 
         return userDto;
     }

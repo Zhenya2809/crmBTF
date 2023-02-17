@@ -1,8 +1,8 @@
 package com.example.crmbtf.rest;
 
+import com.example.crmbtf.email.SendEmailTLS;
 import com.example.crmbtf.model.Role;
 import com.example.crmbtf.model.Status;
-import com.example.crmbtf.model.TelegramUser;
 import com.example.crmbtf.model.dto.AuthenticationRequestDto;
 import com.example.crmbtf.model.User;
 import com.example.crmbtf.model.dto.TelegramUserDto;
@@ -18,6 +18,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -35,13 +36,15 @@ public class AuthenticationRestControllerV1 {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
-    public AuthenticationRestControllerV1(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, UserService userService, UserRepository userRepository) {
+    public AuthenticationRestControllerV1(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, UserService userService, UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
         this.userService = userService;
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping("login")
@@ -94,13 +97,15 @@ public class AuthenticationRestControllerV1 {
     @PostMapping(value = "createacc")
     public ResponseEntity<UserDto> createAccount(@RequestBody TelegramUserDto telegramUser) {
         User user = new User();
-
+        String password = userService.randomPassword();
+        SendEmailTLS.SendEmail("CLINIC_NAME: this is your new password", telegramUser.getEmail(), password);
         user.setEmail(telegramUser.getEmail());
         user.setRoles(List.of(new Role(1L, "ROLE_USER")));
         user.setPhone(telegramUser.getPhone());
         user.setFirstName(telegramUser.getFirstName());
         user.setLastName(telegramUser.getLastName());
         user.setStatus(Status.ACTIVE);
+        user.setPassword(passwordEncoder.encode(password));
         UserDto userDto = UserDto.fromUser(user);
         Optional<User> byPhone = userRepository.findByPhone(telegramUser.getPhone());
 

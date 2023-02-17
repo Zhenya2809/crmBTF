@@ -19,6 +19,7 @@ public interface UserService {
 
     void delete(Long id);
 
+    String randomPassword();
     List<User> findAll();
 
     String userRegistration(String username,String password, String rePassword,String firsName,String lastName,String email,Long id,String role);
