@@ -8,6 +8,8 @@ import com.example.crmbtf.repository.RoleRepository;
 import com.example.crmbtf.repository.UserRepository;
 import com.example.crmbtf.service.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +23,8 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    public BCryptPasswordEncoder passwordEncoder;
     private static final String LOWERCASE_CHARACTERS = "abcdefghijklmnopqrstuvwxyz";
     private static final String UPPERCASE_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final String NUMBERS = "0123456789";
@@ -29,10 +32,16 @@ public class UserServiceImpl implements UserService {
     private static final String ALL_CHARACTERS = LOWERCASE_CHARACTERS + UPPERCASE_CHARACTERS + NUMBERS + SPECIAL_CHARACTERS;
 
 
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, BCryptPasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
-        this.passwordEncoder = passwordEncoder;
+
+    }
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        return bCryptPasswordEncoder;
     }
 
     @Override
@@ -122,6 +131,7 @@ public class UserServiceImpl implements UserService {
         int passwordLength = 10;
         return generateRandomPassword(passwordLength);
     }
+
     public static String generateRandomPassword(int length) {
         Random random = new Random();
         StringBuilder password = new StringBuilder();
@@ -133,6 +143,7 @@ public class UserServiceImpl implements UserService {
 
         return password.toString();
     }
+
     @Override
     public User findById(Long id) {
         User result = userRepository.findById(id).orElse(null);
