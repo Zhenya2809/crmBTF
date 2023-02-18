@@ -267,7 +267,7 @@
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>libs/</classpathPrefix>
                             <mainClass>
-                                com.evgeniy.Application
+                                com.example.crmbtf.CrmBtfApplication
                             </mainClass>
                         </manifest>
                     </archive>
