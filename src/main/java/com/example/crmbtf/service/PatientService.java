@@ -4,7 +4,6 @@ import com.example.crmbtf.model.Patient;
 import com.example.crmbtf.model.PatientCard;
 import com.example.crmbtf.model.dto.PatientDTO;
 import com.example.crmbtf.model.dto.PatientUpdateDTO;
-import com.example.crmbtf.telegram.ExecutionContext;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +15,7 @@ public interface PatientService {
 
     void createNew(String email,String fio);
 
-    Patient findPatientByEmailE(String email, ExecutionContext executionContext);
+//    Patient findPatientByEmailE(String email, ExecutionContext executionContext);
     Patient findPatientByEmailOrCreatePatient(String email, Long chatId);
     List<Patient> findAll();
 

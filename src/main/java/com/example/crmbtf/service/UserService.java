@@ -23,4 +23,6 @@ public interface UserService {
     List<User> findAll();
 
     String userRegistration(String username,String password, String rePassword,String firsName,String lastName,String email,Long id,String role);
+
+    String doctorRegistration(String username,String password, String rePassword,String firsName,String lastName,String email,Long id,String role);
 }

@@ -9,7 +9,6 @@ import com.example.crmbtf.repository.PatientRepository;
 import com.example.crmbtf.repository.TelegramUsersRepository;
 import com.example.crmbtf.repository.UserRepository;
 import com.example.crmbtf.service.PatientService;
-import com.example.crmbtf.telegram.ExecutionContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -68,21 +67,21 @@ public class PatientServiceImpl implements PatientService {
         patient.setFio(fio);
     }
 
-    @Override
-    public Patient findPatientByEmailE(String email, ExecutionContext executionContext) {
-        Optional<Patient> byEmail = patientRepository.findByEmail(email);
-        if (byEmail.isPresent()) {
-            log.info("In fundPatientByEmail patient:{} found by email:{}", byEmail.get(), email);
-            return byEmail.get();
-        }
-        Patient patient = new Patient();
-        patient.setChatId(executionContext.getChatId());
-        patient.setEmail(email);
-        patient.setFio(executionContext.getFirstName() + " " + executionContext.getLastName());
-        patientRepository.save(patient);
-        log.info("IN findPatientByEmail patient:{} not found and created new patient:{} with email:{}", patient, patient, email);
-        return patient;
-    }
+//    @Override
+//    public Patient findPatientByEmailE(String email, ExecutionContext executionContext) {
+//        Optional<Patient> byEmail = patientRepository.findByEmail(email);
+//        if (byEmail.isPresent()) {
+//            log.info("In fundPatientByEmail patient:{} found by email:{}", byEmail.get(), email);
+//            return byEmail.get();
+//        }
+//        Patient patient = new Patient();
+//        patient.setChatId(executionContext.getChatId());
+//        patient.setEmail(email);
+//        patient.setFio(executionContext.getFirstName() + " " + executionContext.getLastName());
+//        patientRepository.save(patient);
+//        log.info("IN findPatientByEmail patient:{} not found and created new patient:{} with email:{}", patient, patient, email);
+//        return patient;
+//    }
 
     @Override
     public Patient findPatientByEmailOrCreatePatient(String email, Long chatId) {

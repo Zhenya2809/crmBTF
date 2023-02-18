@@ -185,4 +185,33 @@ public class UserServiceImpl implements UserService {
         log.info("IN userRegistration = user with phone: {} successfully registred", phone);
         return "IN userRegistration = user with phone: { " + phone + " } successfully registred";
     }
+
+    @Override
+    public String doctorRegistration(String phone, String password, String rePassword, String firstName, String lastName, String email, Long id, String role) {
+
+
+        Optional<User> result = userRepository.findByPhone(phone);
+        if (result.isPresent()) {
+            log.error("A user with the same name already exists");
+            return "A user with the same name already exists";
+
+        }
+        if (!password.equals(rePassword)) {
+            log.info("Passwords do not match");
+            return "Passwords do not match";
+        }
+        Date date = new Date();
+        User user = new User();
+        user.setPhone(phone);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setEmail(email);
+        user.setCreated(date);
+        user.setStatus(Status.ACTIVE);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setRoles(List.of(new Role(3L, "ROLE_DOCTOR")));
+        userRepository.save(user);
+        log.info("IN userRegistration = user with phone: {} successfully registred", phone);
+        return "IN userRegistration = user with phone: { " + phone + " } successfully registred";
+    }
 }
