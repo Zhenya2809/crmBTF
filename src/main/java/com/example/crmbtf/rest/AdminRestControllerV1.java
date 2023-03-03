@@ -49,7 +49,7 @@ public class AdminRestControllerV1 {
     }
 
     @GetMapping(value = "myProfile")
-    public ResponseEntity myProfile() {
+    public ResponseEntity<List<PatientDTO>> myProfile() {
 
         List<PatientDTO> patientDTOList = new ArrayList<>();
         List<Patient> patients = patientService.findAll();
@@ -61,7 +61,7 @@ public class AdminRestControllerV1 {
     }
 
     @GetMapping(value = "users/search")
-    public ResponseEntity searchAllUser() {
+    public ResponseEntity<List<UserDto>> searchAllUser() {
 //HashMap<Long,User> userHashMap = new HashMap<>();
         List<UserDto> userDtoList = new ArrayList<>();
         List<User> userList = userService.findAll();
@@ -124,7 +124,7 @@ public class AdminRestControllerV1 {
     }
 
     @PostMapping("saveDoctor")
-    public ResponseEntity saveDoctor(@RequestBody DoctorDto requestDto) {
+    public ResponseEntity<Map<Object, Object>> saveDoctor(@RequestBody DoctorDto requestDto) {
         userService.doctorRegistration(requestDto.getLogin(),requestDto.getPassword(),requestDto.getRePassword(),requestDto.getDoctorFirstName(),requestDto.getDoctorLastName(),requestDto.getEmail(),3L,"ROLE_DOCTOR");
         User user = userService.findByPhone(requestDto.getLogin());
         String s = doctorService.createDoctor(requestDto.getDoctorFirstName(),requestDto.getDoctorLastName(), requestDto.getSpeciality(), requestDto.getAbout(), requestDto.getLinkPhoto(),user);
@@ -137,7 +137,7 @@ public class AdminRestControllerV1 {
 
 
     @PostMapping("users")
-    public ResponseEntity postAppointment(@RequestBody Long id) {
+    public ResponseEntity<List<User>> postAppointment(@RequestBody Long id) {
 
         List<User> userList = new ArrayList<>();
         Iterator<User> getAllUsers = userService.findAll().stream().iterator();

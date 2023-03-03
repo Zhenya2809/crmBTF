@@ -1,7 +1,6 @@
 package com.example.crmbtf.model.dto;
 
 import com.example.crmbtf.model.AppointmentToDoctors;
-import com.example.crmbtf.model.Patient;
 import lombok.Data;
 
 import java.sql.Date;
@@ -16,7 +15,12 @@ public class AppointmentToDoctorDTO {
     private String doctorFirstName;
     private String doctorLastName;
 
-    public static AppointmentToDoctorDTO fromPatient(AppointmentToDoctors appointment) {
+    private Long doctorAppointmentsID;
+    private Long clientID;
+    private Long doctorID;
+    private String patientFIO;
+
+    public static AppointmentToDoctorDTO fromAppointment(AppointmentToDoctors appointment) {
         AppointmentToDoctorDTO appointmentToDoctorDTO = new AppointmentToDoctorDTO();
         appointmentToDoctorDTO.setDate(appointment.getDate());
         appointmentToDoctorDTO.setTime(appointment.getTime());
@@ -24,6 +28,10 @@ public class AppointmentToDoctorDTO {
         appointmentToDoctorDTO.setDoctorLastName(appointment.getDoctor().getLastName());
         appointmentToDoctorDTO.setDoctorLastName(appointmentToDoctorDTO.getDoctorLastName());
         appointmentToDoctorDTO.setDoctorSpeciality(appointment.getDoctor().getSpeciality());
+        appointmentToDoctorDTO.setDoctorAppointmentsID(appointment.getDoctorsappointmentsID());
+        appointmentToDoctorDTO.setClientID(appointment.getPatient().getId());
+        appointmentToDoctorDTO.setDoctorID(appointment.getDoctor().getId());
+        appointmentToDoctorDTO.setPatientFIO(appointment.getPatient().getFio());
         return appointmentToDoctorDTO;
     }
 }

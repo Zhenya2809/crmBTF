@@ -48,7 +48,7 @@ public class AuthenticationRestControllerV1 {
     }
 
     @PostMapping("login")
-    public ResponseEntity login(@RequestBody AuthenticationRequestDto requestDto) {
+    public ResponseEntity<Map<Object, Object>> login(@RequestBody AuthenticationRequestDto requestDto) {
         try {
             String phone = requestDto.getPhone();
             String password = requestDto.getPassword();
@@ -75,7 +75,7 @@ public class AuthenticationRestControllerV1 {
     }
 
     @PostMapping("loginTelegram/{phone}/{role}")
-    public ResponseEntity loginTelegram(@PathVariable(name = "phone") String phone,
+    public ResponseEntity<Map<Object, Object>> loginTelegram(@PathVariable(name = "phone") String phone,
                                         @PathVariable(name = "role") String role) {
         try {
 

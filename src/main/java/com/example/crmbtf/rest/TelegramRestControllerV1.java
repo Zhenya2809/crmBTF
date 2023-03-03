@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @CrossOrigin("*")
@@ -42,7 +41,7 @@ public class TelegramRestControllerV1 {
         List<AppointmentToDoctorDTO> appointmentToDoctorDTOList = new ArrayList<>();
 
         for (AppointmentToDoctors appointment : userAppointment) {
-            AppointmentToDoctorDTO appointmentToDoctorDTO1 = AppointmentToDoctorDTO.fromPatient(appointment);
+            AppointmentToDoctorDTO appointmentToDoctorDTO1 = AppointmentToDoctorDTO.fromAppointment(appointment);
             appointmentToDoctorDTOList.add(appointmentToDoctorDTO1);
         }
         return ResponseEntity.ok(appointmentToDoctorDTOList);
@@ -93,7 +92,6 @@ public class TelegramRestControllerV1 {
         Long chatId = appointmentDto.getChatId();
 
         appointmentService.createAppointmentToDoctorsByTelegram(date, time, String.valueOf(docId), chatId);
-        //appointmentService.createAppointmentToDoctorsByTelegram()
         return ResponseEntity.ok(null);
     }
 }

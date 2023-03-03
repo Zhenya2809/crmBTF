@@ -169,8 +169,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String userRegistration(String phone, String password, String rePassword, String firstName, String lastName, String email, Long id, String role) {
-
+    public String userRegistration(String phone, String password, String rePassword, String firstName, String lastName, String email) {
 
         Optional<User> result = userRepository.findByPhone(phone);
         if (result.isPresent()) {

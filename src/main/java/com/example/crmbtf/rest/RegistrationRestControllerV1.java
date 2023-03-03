@@ -25,12 +25,10 @@ public class RegistrationRestControllerV1 {
     }
 
     @PostMapping("registration")
-    public ResponseEntity registration(@RequestBody RegistrationRequestDto requestDto) {
+    public ResponseEntity<String> registration(@RequestBody RegistrationRequestDto requestDto) {
 
-        String s = userService.userRegistration(requestDto.getUsername(), requestDto.getPassword(), requestDto.getRePassword(), requestDto.getFirstName(), requestDto.getLastName(), requestDto.getEmail(),1L,"ROLE_USER");
-        patientService.createNew(requestDto.getEmail(),requestDto.getFirstName()+" "+requestDto.getLastName());
-        Map<Object, Object> response = new HashMap<>();
-        response.put("result", s);
+        String response = userService.userRegistration(requestDto.getUsername(), requestDto.getPassword(), requestDto.getRePassword(), requestDto.getFirstName(), requestDto.getLastName(), requestDto.getEmail());
+        patientService.createNew(requestDto.getEmail(),requestDto.getFirstName()+" "+requestDto.getLastName(),requestDto.getUsername());
         return ResponseEntity.ok(response);
 
     }

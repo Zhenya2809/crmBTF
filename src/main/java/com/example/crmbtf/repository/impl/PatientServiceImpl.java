@@ -58,30 +58,14 @@ public class PatientServiceImpl implements PatientService {
     public void save(Patient patient) {
         Patient save = patientRepository.save(patient);
         log.info("IN save patient:{} is successfully created", save);
-
     }
-
-    public void createNew(String email, String fio) {
+    public void createNew(String email, String fio,String phone) {
         Patient patient = new Patient();
         patient.setEmail(email);
         patient.setFio(fio);
+        patient.setPhoneNumber(phone);
+        patientRepository.save(patient);
     }
-
-//    @Override
-//    public Patient findPatientByEmailE(String email, ExecutionContext executionContext) {
-//        Optional<Patient> byEmail = patientRepository.findByEmail(email);
-//        if (byEmail.isPresent()) {
-//            log.info("In fundPatientByEmail patient:{} found by email:{}", byEmail.get(), email);
-//            return byEmail.get();
-//        }
-//        Patient patient = new Patient();
-//        patient.setChatId(executionContext.getChatId());
-//        patient.setEmail(email);
-//        patient.setFio(executionContext.getFirstName() + " " + executionContext.getLastName());
-//        patientRepository.save(patient);
-//        log.info("IN findPatientByEmail patient:{} not found and created new patient:{} with email:{}", patient, patient, email);
-//        return patient;
-//    }
 
     @Override
     public Patient findPatientByEmailOrCreatePatient(String email, Long chatId) {
@@ -93,12 +77,24 @@ public class PatientServiceImpl implements PatientService {
         Patient patient = new Patient();
         patient.setChatId(chatId);
         patient.setEmail(email);
-//        TelegramUsers dataUserByChatId = telegramUsersRepository.findDataUserByChatId(chatId);
-//        String firstName = dataUserByChatId.getFirstName();
-//        String lastName = dataUserByChatId.getLastName();
-//        patient.setFio(firstName + " " + lastName);
         patientRepository.save(patient);
         log.info("IN findPatientByEmail patient not found and created new patient with email:{}", email);
+        return patient;
+    }
+
+    @Override
+    public Patient findPatientByPhoneOrCreatePatient(String phone, Long chatId) {
+        Optional<Patient> byPhone = patientRepository.findPatientByPhoneNumber(phone);
+        if (byPhone.isPresent()) {
+            log.info("In fundPatientByPhone patient:{} found by phone:{}", byPhone.get(), phone);
+            return byPhone.get();
+        }
+        Patient patient = new Patient();
+        patient.setChatId(chatId);
+        patient.setPhoneNumber(phone);
+
+        patientRepository.save(patient);
+        log.info("IN fundPatientByPhone patient not found and created new patient with phone:{}", phone);
         return patient;
     }
 
@@ -152,6 +148,12 @@ public class PatientServiceImpl implements PatientService {
                 }
                 if (patientUpdate.getInsurancePolicy() != null) {
                     patient.setInsurancePolicy(patientUpdate.getInsurancePolicy());
+                }
+                if(patientUpdate.getFio()!=null){
+                    patient.setFio(patientUpdate.getFio());
+                }
+                if(patientUpdate.getEmail()!=null){
+                    patient.setEmail(patientUpdate.getEmail());
                 }
                 if (patientUpdate.getPlaceOfResidence() != null) {
                     patient.setPlaceOfResidence(patientUpdate.getPlaceOfResidence());

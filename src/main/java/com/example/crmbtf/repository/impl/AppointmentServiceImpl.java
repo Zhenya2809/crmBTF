@@ -41,23 +41,21 @@ public class AppointmentServiceImpl implements AppointmentService {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         String phone = auth.getName();
-        Optional<User> byUsername = userRepository.findByPhone(phone);
-        if (byUsername.isPresent()) {
-            Optional<Doctor> doctorById = doctorRepository.findDoctorById(byUsername.get().getId());
-            if (doctorById.isPresent()) {
-                Doctor doctor = doctorById.get();
-                return appointmentRepository.findAppointmentToDoctorsByDoctor(doctor);
+        Optional<User> user = userRepository.findByPhone(phone);
+        if (user.isPresent()) {
+            Optional<Doctor> doctor = doctorRepository.findByFirstNameAndLastName(user.get().getFirstName(), user.get().getLastName());
+            if (doctor.isPresent()) {
+                return appointmentRepository.findAppointmentToDoctorsByDoctor(doctor.get());
             }
         }
         throw new RuntimeException("Appointments not found");
     }
 
     @Override
-    public void createAppointmentToDoctorsByTelegram( String date, String time, String doctorID, Long chatId) {
+    public void createAppointmentToDoctorsByTelegram(String date, String time, String doctorID, Long chatId) {
 
 
         Optional<TelegramUser> dataUserByChatId = telegramUsersService.findDataUserByChatId(chatId);
-
 
 
         Optional<Patient> patientOptional = patientRepository.findByEmail(dataUserByChatId.get().getEmail());
@@ -70,7 +68,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                 AppointmentToDoctors incoming = new AppointmentToDoctors();
                 incoming.setDate(java.sql.Date.valueOf(date));
                 incoming.setTime(LocalTime.parse(time));
-                 incoming.setDoctor(doctorById.get());
+                incoming.setDoctor(doctorById.get());
                 incoming.setPatient(patient);
                 appointmentRepository.save(incoming);
                 log.info("IN createAppointment - appointment: {} successfully registered", incoming);
@@ -197,20 +195,6 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public List<AppointmentToDoctors> getTelegramAppointment(Long chatId) {
-        List<AppointmentToDoctors> appointmentToDoctors = new ArrayList<>();
-        TelegramUser dataUserByChatId = telegramUsersRepository.findDataUserByChatId(chatId);
-        String phone = dataUserByChatId.getPhone();
-        Optional<User> byPhone = userRepository.findByPhone(phone);
-        if (byPhone.isPresent()) {
-            User user = byPhone.get();
-
-        }
-
-        return null;
-    }
-
-    @Override
     public void deleteAppointmentByDoctorId(Long id) {
         AppointmentToDoctors appointmentToDoctorsByDoctorsappointmentsID = appointmentRepository.findAppointmentToDoctorsByDoctorsappointmentsID(id);
         appointmentRepository.delete(appointmentToDoctorsByDoctorsappointmentsID);
@@ -304,17 +288,6 @@ public class AppointmentServiceImpl implements AppointmentService {
         return timeList;
     }
 
-//    public void createAppointmentToDoctor(LocalDate day, String time, String email, String docId, TelegramUser users) {
-//
-////        String email = telegramUsersService.findDataUserByChatId(getChatId()).get().getEmail();
-//        createAppointmentToDoctorsByTelegram(email, day.toString(), time, docId, users);
-//
-////        replyMessage(users.getFirstName() + " ты записан " + day + " на " + time + "\n с нетерпение ждём тебя");
-////        List<String> buttonsNameList = List.of("Наш адрес", "Услуги", "Специалисты", "Контакты", "Главное меню");
-////        buildReplyKeyboardWithStringList("Возможно я готов помочь тебе ещё?", buttonsNameList);
-//
-//    }
-
     public List<String> findAllAvailableTimeByDoctorId(LocalDate day, Long docId) {
         List<String> timeList = new ArrayList<>();
         timeList.add("08:00");
@@ -365,4 +338,21 @@ public class AppointmentServiceImpl implements AppointmentService {
         return timeList;
     }
 
+    public String updateAppointment(Date date, LocalTime time,
+                                    Long doctorID,
+                                    Long clientID,
+                                    Long appointmentID) {
+        AppointmentToDoctors appointmentToDoctors = new AppointmentToDoctors();
+        Optional<Doctor> doctorById = doctorRepository.findDoctorById(doctorID);
+        appointmentToDoctors.setDoctor(doctorById.get());
+        Patient patientById = patientRepository.findPatientById(clientID);
+        appointmentToDoctors.setPatient(patientById);
+        appointmentToDoctors.setDoctorsappointmentsID(appointmentID);
+        appointmentToDoctors.setDate((java.sql.Date) date);
+        appointmentToDoctors.setTime(time);
+        appointmentRepository.save(appointmentToDoctors);
+
+
+        return "good";
+    }
 }

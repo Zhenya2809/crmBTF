@@ -2,7 +2,6 @@ package com.example.crmbtf.rest;
 
 import com.example.crmbtf.model.AppointmentToDoctors;
 import com.example.crmbtf.model.Doctor;
-import com.example.crmbtf.model.Patient;
 import com.example.crmbtf.model.dto.*;
 import com.example.crmbtf.model.User;
 import com.example.crmbtf.service.AppointmentService;
@@ -98,11 +97,7 @@ public class UserRestControllerV1 {
             @PathVariable(name = "docId") String docId,
             @PathVariable(name = "date") String date,
             @PathVariable(name = "time") String time) {
-
-
         appointmentService.createAppointmentToDoctorsBySite(date, time, Long.valueOf(docId));
-
-
     }
 
     @GetMapping(value = "doctors/search")
@@ -141,7 +136,7 @@ public class UserRestControllerV1 {
         List<AppointmentToDoctors> userAppointment = appointmentService.getUserAppointment();
         List<AppointmentToDoctorDTO> appointmentToDoctorDTOList = new ArrayList<>();
         for (AppointmentToDoctors appointment : userAppointment) {
-            AppointmentToDoctorDTO appointmentToDoctorDTO1 = AppointmentToDoctorDTO.fromPatient(appointment);
+            AppointmentToDoctorDTO appointmentToDoctorDTO1 = AppointmentToDoctorDTO.fromAppointment(appointment);
             appointmentToDoctorDTOList.add(appointmentToDoctorDTO1);
         }
         return ResponseEntity.ok(appointmentToDoctorDTOList);

@@ -13,12 +13,13 @@ import java.util.Optional;
 public interface DoctorRepository extends JpaRepository<Doctor, Long> {
     Optional<Doctor> findDoctorById(Long id);
 
+    Optional<Doctor> findByFirstNameAndLastName(String firstName, String lastName);
+
     List<Doctor> findDoctorsBySpeciality(String speciality);
+
     @Query(value = "select * from t_doctor where first_name like :firstName and last_name like :lastName", nativeQuery = true)
     Doctor findDoctorByFio(@Param("firstName") String firstName,
                            @Param("lastName") String lastName);
-
-    Doctor findDoctorByUserId(Long id);
 
     @Query(value = "select * from t_doctor where lower(speciality) like %:speciality% and lower(fio) like %:fio% limit 50", nativeQuery = true)
     Collection<Doctor> searchDoctor(@Param("speciality") String speciality,
@@ -26,4 +27,5 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
 
     @Query(value = "select distinct speciality from t_doctor td ", nativeQuery = true)
     List<String> getAllSpeciality();
+    Optional<Doctor> findDoctorByUserId(Long userID);
 }
