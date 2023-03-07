@@ -98,4 +98,9 @@ public class DoctorServiceImpl implements DoctorService {
     public List<String> getAllSpeciality() {
         return doctorRepository.getAllSpeciality();
     }
+
+    @Override
+    public List<Doctor> searchDoctorsByName(String name) {
+        return doctorRepository.searchByNameIgnoreCase(name);
+    }
 }

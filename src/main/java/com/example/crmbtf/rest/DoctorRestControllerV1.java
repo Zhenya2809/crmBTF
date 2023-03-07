@@ -45,7 +45,7 @@ public class DoctorRestControllerV1 {
     @GetMapping(value = "appointments")
     public ResponseEntity<List<AppointmentToDoctorDTO>> myProfile() {
         List<AppointmentToDoctors> appointmentForDoctor = appointmentService.findByDateGreaterThanEqual();
-        return ResponseEntity.ok(configMapper.toAppointmentToDoctorDtos(appointmentForDoctor));
+        return ResponseEntity.ok(AppointmentToDoctorDTO.fromAppointmentList(appointmentForDoctor));
     }
 
     @PostMapping("updateAppointment")

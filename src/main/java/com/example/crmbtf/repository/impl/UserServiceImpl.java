@@ -125,6 +125,7 @@ public class UserServiceImpl implements UserService {
         } else
             throw new RuntimeException("user not found");
     }
+
     @Override
     public String randomPassword() {
         int passwordLength = 10;
@@ -222,5 +223,10 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
         log.info("IN userRegistration = user with phone: {} successfully registred", phone);
         return "IN userRegistration = user with phone: { " + phone + " } successfully registred";
+    }
+
+    @Override
+    public List<User> searchUsersByName(String name) {
+        return userRepository.searchUsersByName(name);
     }
 }

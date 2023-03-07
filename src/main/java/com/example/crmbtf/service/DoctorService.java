@@ -26,4 +26,5 @@ public interface DoctorService {
     Collection<Doctor> searchDoctor(@Param("speciality") String speciality,
                                     @Param("fio") String fio);
     List<String> getAllSpeciality();
+    List<Doctor> searchDoctorsByName(String name);
 }

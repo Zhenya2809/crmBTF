@@ -28,4 +28,6 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
     @Query(value = "select distinct speciality from t_doctor td ", nativeQuery = true)
     List<String> getAllSpeciality();
     Optional<Doctor> findDoctorByUserId(Long userID);
+    @Query("SELECT d FROM Doctor d WHERE LOWER(d.firstName) LIKE LOWER(CONCAT('%', :name, '%')) OR LOWER(d.lastName) LIKE LOWER(CONCAT('%', :name, '%'))")
+    List<Doctor> searchByNameIgnoreCase(@Param("name") String name);
 }

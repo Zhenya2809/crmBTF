@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 import java.util.*;
 
 @Slf4j
@@ -107,7 +108,7 @@ public class AdminRestControllerV1 {
     }
 
     @GetMapping("searchPatient/{fio}")
-    public ResponseEntity<List<PatientDto>> search(@PathVariable(name = "fio") String fio) {
+    public ResponseEntity<List<PatientDto>> searchClientCards(@PathVariable(name = "fio") String fio) {
         List<Patient> patients;
         if (Objects.equals(fio, "null")) {
             patients = patientService.findAll();
@@ -118,5 +119,14 @@ public class AdminRestControllerV1 {
         return ResponseEntity.ok(configMapper.toPatientDtoList(patients));
     }
 
+    @GetMapping("searchUser/{fio}")
+    public ResponseEntity<List<UserDto>> searchUser(@PathVariable(name = "fio") String fio) {
+        return ResponseEntity.ok(configMapper.toUserDtos(userService.searchUsersByName(fio)));
+    }
+
+    @GetMapping("searchDoctor/{fio}")
+    public ResponseEntity<List<DoctorDto>> searchDoctor(@PathVariable(name = "fio") String fio) {
+        return ResponseEntity.ok(configMapper.toDoctorDtos(doctorService.searchDoctorsByName(fio)));
+    }
 
 }

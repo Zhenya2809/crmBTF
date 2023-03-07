@@ -96,6 +96,7 @@ public class UserRestControllerV1 {
         return ResponseEntity.ok(configMapper.toDoctorDtos(doctors));
     }
 
+
     @PostMapping(value = "update")
     public void updateDate(@RequestBody PatientDto patientDto) {
         patientService.updateProfile(patientDto);
