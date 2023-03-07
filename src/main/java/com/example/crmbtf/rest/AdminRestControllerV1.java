@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @CrossOrigin("*")
@@ -48,32 +49,12 @@ public class AdminRestControllerV1 {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping(value = "myProfile")
-    public ResponseEntity<List<PatientDTO>> myProfile() {
-
-        List<PatientDTO> patientDTOList = new ArrayList<>();
-        List<Patient> patients = patientService.findAll();
-        for (Patient patient : patients) {
-            PatientDTO patientDTO = PatientDTO.fromPatient(patient);
-            patientDTOList.add(patientDTO);
-        }
-        return ResponseEntity.ok(patientDTOList);
-    }
 
     @GetMapping(value = "users/search")
     public ResponseEntity<List<UserDto>> searchAllUser() {
-//HashMap<Long,User> userHashMap = new HashMap<>();
-        List<UserDto> userDtoList = new ArrayList<>();
-        List<User> userList = userService.findAll();
-        for (User user : userList) {
-            UserDto userDto = new UserDto();
-            userDto.setEmail(user.getEmail());
-            userDto.setPhone(user.getPhone());
-            userDto.setId(user.getId());
-            userDto.setFirstName(user.getFirstName());
-            userDto.setLastName(user.getLastName());
-            userDtoList.add(userDto);
-        }
+        List<UserDto> userDtoList = userService.findAll().stream()
+                .map(UserDto::fromUser)
+                .collect(Collectors.toList());
         return ResponseEntity.ok(userDtoList);
     }
 
@@ -108,7 +89,7 @@ public class AdminRestControllerV1 {
         }
     }
 
-        @GetMapping(value = "patientCard/delete/{id}")
+    @GetMapping(value = "patientCard/delete/{id}")
     public void deletePatientCardById(@PathVariable(name = "id") Long id) {
         patientCardService.delete(id);
     }
@@ -117,17 +98,17 @@ public class AdminRestControllerV1 {
     public ResponseEntity<Void> deleteDoctorsById(@PathVariable(name = "id") Long id) {
         try {
             doctorService.deleteDoctor(id);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-            return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("saveDoctor")
     public ResponseEntity<Map<Object, Object>> saveDoctor(@RequestBody DoctorDto requestDto) {
-        userService.doctorRegistration(requestDto.getLogin(),requestDto.getPassword(),requestDto.getRePassword(),requestDto.getDoctorFirstName(),requestDto.getDoctorLastName(),requestDto.getEmail(),3L,"ROLE_DOCTOR");
+        userService.doctorRegistration(requestDto.getLogin(), requestDto.getPassword(), requestDto.getRePassword(), requestDto.getDoctorFirstName(), requestDto.getDoctorLastName(), requestDto.getEmail(), 3L, "ROLE_DOCTOR");
         User user = userService.findByPhone(requestDto.getLogin());
-        String s = doctorService.createDoctor(requestDto.getDoctorFirstName(),requestDto.getDoctorLastName(), requestDto.getSpeciality(), requestDto.getAbout(), requestDto.getLinkPhoto(),user);
+        String s = doctorService.createDoctor(requestDto.getDoctorFirstName(), requestDto.getDoctorLastName(), requestDto.getSpeciality(), requestDto.getAbout(), requestDto.getLinkPhoto(), user);
 
         Map<Object, Object> response = new HashMap<>();
         response.put("result", s);
@@ -148,6 +129,26 @@ public class AdminRestControllerV1 {
 
         return ResponseEntity.ok(userList);
 
+    }
+
+    @GetMapping("searchPatient/{fio}")
+    public ResponseEntity<List<PatientDTO>> search(@PathVariable(name = "fio") String fio) {
+        List<PatientDTO> patientsDTO = new ArrayList<>();
+
+        List<Patient> patients;
+        if (Objects.equals(fio, "null")) {
+            patients = patientService.findAll();
+
+        } else {
+            patients = patientService.searchPatientsByName(fio);
+        }
+
+        for (Patient patient : patients) {
+            PatientDTO patientDTO = PatientDTO.fromPatient(patient);
+            patientsDTO.add(patientDTO);
+        }
+
+        return ResponseEntity.ok(patientsDTO);
     }
 
 

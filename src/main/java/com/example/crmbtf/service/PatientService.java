@@ -13,13 +13,14 @@ public interface PatientService {
 
     void save(Patient patient);
 
-    void createNew(String email,String fio,String phone);
+    Patient createNew(String email,String fio,String phone);
 
 
 //    Patient findPatientByEmailE(String email, ExecutionContext executionContext);
     Patient findPatientByEmailOrCreatePatient(String email, Long chatId);
     List<Patient> findAll();
-
+    Patient findPatientByPhone(String phone);
+    List<Patient> searchPatientsByName(String name);
     void updateProfile(PatientUpdateDTO patientUpdate);
     Patient findPatientByPhoneOrCreatePatient(String phone, Long chatId);
     List<PatientDTO> getMyProfile();

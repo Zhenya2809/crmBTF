@@ -4,6 +4,7 @@ import com.example.crmbtf.email.SendEmailTLS;
 import com.example.crmbtf.model.*;
 import com.example.crmbtf.repository.*;
 import com.example.crmbtf.service.AppointmentService;
+import com.example.crmbtf.service.PatientCardService;
 import com.example.crmbtf.service.TelegramUsersService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -24,16 +25,36 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final DoctorRepository doctorRepository;
     private final TelegramUsersService telegramUsersService;
     private final UserRepository userRepository;
+    private final PatientCardService patientCardService;
 
 
     public AppointmentServiceImpl(AppointmentRepository appointmentRepository, PatientRepository patientRepository, DoctorRepository doctorRepository, UserRepository userRepository,
-                                  TelegramUsersRepository telegramUsersRepository, TelegramUsersService telegramUsersService) {
+                                  TelegramUsersRepository telegramUsersRepository, TelegramUsersService telegramUsersService, PatientCardService patientCardService) {
         this.appointmentRepository = appointmentRepository;
         this.patientRepository = patientRepository;
         this.doctorRepository = doctorRepository;
         this.userRepository = userRepository;
         this.telegramUsersRepository = telegramUsersRepository;
         this.telegramUsersService = telegramUsersService;
+        this.patientCardService = patientCardService;
+    }
+
+    @Override
+    public List<AppointmentToDoctors> findByDateGreaterThanEqual() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        String phone = auth.getName();
+        Optional<User> user = userRepository.findByPhone(phone);
+        if (user.isPresent()) {
+            Optional<Doctor> doctor = doctorRepository.findByFirstNameAndLastName(user.get().getFirstName(), user.get().getLastName());
+            if (doctor.isPresent()) {
+                Date currentDay = new Date();
+                return appointmentRepository.findByDateGreaterThanEqualAndDoctorId(currentDay, doctor.get().getId());
+            }
+        }
+        throw new RuntimeException("Appointments not found");
+
+
     }
 
     @Override
@@ -80,7 +101,11 @@ public class AppointmentServiceImpl implements AppointmentService {
             patient.setFio(dataUserByChatId.get().getFirstName() + " " + dataUserByChatId.get().getLastName());
             patient.setEmail(dataUserByChatId.get().getEmail());
             patient.setPhoneNumber(dataUserByChatId.get().getPhone());
+
+            PatientCard patientCard = new PatientCard();
+            patientCard.setPatient(patient);
             patientRepository.save(patient);
+            patientCardService.save(patientCard);
             log.info("patient saved");
 
 
@@ -111,6 +136,9 @@ public class AppointmentServiceImpl implements AppointmentService {
                 patient = new Patient();
                 patient.setFio(byUsername.get().getFirstName() + " " + byUsername.get().getLastName());
                 patient.setEmail(byUsername.get().getEmail());
+                PatientCard patientCard = new PatientCard();
+                patientCard.setPatient(patient);
+                patientCardService.save(patientCard);
                 patientRepository.save(patient);
             }
             Optional<Doctor> doctorById = doctorRepository.findDoctorById(doctorID);
@@ -354,5 +382,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 
 
         return "good";
+    }
+
+    @Override
+    public void delete(Long id) {
+        Optional<AppointmentToDoctors> byId = appointmentRepository.findById(id);
+        byId.ifPresent(appointmentRepository::delete);
     }
 }

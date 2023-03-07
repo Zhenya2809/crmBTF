@@ -1,6 +1,7 @@
 package com.example.crmbtf.model;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import javax.persistence.*;
@@ -8,6 +9,7 @@ import java.util.List;
 
 
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "t_user")
 @Data

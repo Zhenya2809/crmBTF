@@ -17,6 +17,7 @@ public interface AppointmentService {
 
     List<AppointmentToDoctors> findAll();
 
+    List<AppointmentToDoctors> findByDateGreaterThanEqual();
     Iterable<AppointmentToDoctors> findAppointmentToDoctorsByDoctor(Doctor doctor);
 
     public List<AppointmentToDoctors> getAppointmentForDoctor();
@@ -39,4 +40,5 @@ public interface AppointmentService {
                            Long doctorID,
                            Long clientID,
                            Long appointmentID);
+    void delete(Long id);
 }

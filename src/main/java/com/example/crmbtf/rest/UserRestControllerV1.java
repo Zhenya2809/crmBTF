@@ -2,12 +2,10 @@ package com.example.crmbtf.rest;
 
 import com.example.crmbtf.model.AppointmentToDoctors;
 import com.example.crmbtf.model.Doctor;
+import com.example.crmbtf.model.TreatmentInformation;
 import com.example.crmbtf.model.dto.*;
 import com.example.crmbtf.model.User;
-import com.example.crmbtf.service.AppointmentService;
-import com.example.crmbtf.service.DoctorService;
-import com.example.crmbtf.service.PatientService;
-import com.example.crmbtf.service.UserService;
+import com.example.crmbtf.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +20,9 @@ import java.util.*;
 public class UserRestControllerV1 {
     private final UserService userService;
     private final DoctorService doctorService;
-
     private final PatientService patientService;
     private final AppointmentService appointmentService;
+
 
     @Autowired
     public UserRestControllerV1(UserService userService, DoctorService doctorService, PatientService patientService, AppointmentService appointmentService) {
@@ -32,6 +30,7 @@ public class UserRestControllerV1 {
         this.doctorService = doctorService;
         this.patientService = patientService;
         this.appointmentService = appointmentService;
+
     }
 
     @GetMapping(value = "{id}")
@@ -141,4 +140,6 @@ public class UserRestControllerV1 {
         }
         return ResponseEntity.ok(appointmentToDoctorDTOList);
     }
+
+
 }

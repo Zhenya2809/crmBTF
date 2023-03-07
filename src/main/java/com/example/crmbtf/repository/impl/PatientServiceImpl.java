@@ -14,6 +14,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -26,7 +32,8 @@ import java.util.Optional;
 public class PatientServiceImpl implements PatientService {
     private final TelegramUsersRepository telegramUsersRepository;
 
-
+    @PersistenceContext
+    private EntityManager entityManager;
     private final PatientRepository patientRepository;
     private final PatientCardServiceImpl patientCardService;
     private final UserRepository userRepository;
@@ -59,12 +66,14 @@ public class PatientServiceImpl implements PatientService {
         Patient save = patientRepository.save(patient);
         log.info("IN save patient:{} is successfully created", save);
     }
-    public void createNew(String email, String fio,String phone) {
+
+    public Patient createNew(String email, String fio, String phone) {
         Patient patient = new Patient();
         patient.setEmail(email);
         patient.setFio(fio);
         patient.setPhoneNumber(phone);
         patientRepository.save(patient);
+        return patient;
     }
 
     @Override
@@ -96,6 +105,15 @@ public class PatientServiceImpl implements PatientService {
         patientRepository.save(patient);
         log.info("IN fundPatientByPhone patient not found and created new patient with phone:{}", phone);
         return patient;
+    }
+    @Override
+    public Patient findPatientByPhone(String phone){
+        Optional<Patient> byPhone = patientRepository.findPatientByPhoneNumber(phone);
+        if (byPhone.isPresent()) {
+            log.info("In fundPatientByPhone patient:{} found by phone:{}", byPhone.get(), phone);
+            return byPhone.get();
+        }
+        throw new RuntimeException("user not found");
     }
 
     @Override
@@ -149,18 +167,29 @@ public class PatientServiceImpl implements PatientService {
                 if (patientUpdate.getInsurancePolicy() != null) {
                     patient.setInsurancePolicy(patientUpdate.getInsurancePolicy());
                 }
-                if(patientUpdate.getFio()!=null){
+                if (patientUpdate.getFio() != null) {
                     patient.setFio(patientUpdate.getFio());
+                    String[] s = patientUpdate.getFio().split(" ");
+                    if (s.length >= 1) {
+                        user.setFirstName(s[0]);
+                    }
+                    if (s.length >= 2) {
+                        user.setLastName(s[1]);
+                    }
+
                 }
-                if(patientUpdate.getEmail()!=null){
+                if (patientUpdate.getEmail() != null) {
                     patient.setEmail(patientUpdate.getEmail());
+                    user.setEmail(patientUpdate.getEmail());
                 }
                 if (patientUpdate.getPlaceOfResidence() != null) {
                     patient.setPlaceOfResidence(patientUpdate.getPlaceOfResidence());
                 }
                 if (patientUpdate.getPhoneNumber() != null) {
                     patient.setPhoneNumber(patientUpdate.getPhoneNumber());
+                    user.setPhone(patientUpdate.getPhoneNumber());
                 }
+                userRepository.save(user);
                 patientRepository.save(patient);
             }
         }
@@ -221,5 +250,19 @@ public class PatientServiceImpl implements PatientService {
         Optional<PatientCard> patientCardByPatient = patientCardService.findPatientCardByPatient(patient);
         log.info("IN findPatientCardByPatient Optional<PatientCard>:{} found by patient:{}", patientCardByPatient, patient);
         return patientCardByPatient;
+    }
+
+    @Override
+    public List<Patient> searchPatientsByName(String name) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Patient> criteriaQuery = criteriaBuilder.createQuery(Patient.class);
+        Root<Patient> root = criteriaQuery.from(Patient.class);
+
+        criteriaQuery.select(root)
+                .where(criteriaBuilder.like(criteriaBuilder.lower(root.get("fio")), "%" + name.toLowerCase() + "%"));
+
+        TypedQuery<Patient> query = entityManager.createQuery(criteriaQuery);
+
+        return query.getResultList();
     }
 }

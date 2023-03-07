@@ -1,5 +1,6 @@
 package com.example.crmbtf.service;
 
+import com.example.crmbtf.model.Doctor;
 import com.example.crmbtf.model.User;
 
 import java.time.LocalDate;
@@ -14,6 +15,7 @@ public interface UserService {
     List<User> getAll();
 
     User findByPhone(String phone);
+//    Doctor findDoctorByPhone(String phone);
 
     User findById(Long id);
 

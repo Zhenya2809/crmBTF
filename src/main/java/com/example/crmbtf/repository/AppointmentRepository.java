@@ -6,6 +6,7 @@ import com.example.crmbtf.model.Doctor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -14,7 +15,6 @@ public interface AppointmentRepository extends JpaRepository<AppointmentToDoctor
     List<AppointmentToDoctors> findAllByDoctor_Id(Long id);
     List<AppointmentToDoctors> findAllByPatientId(Long id);
     AppointmentToDoctors findAppointmentToDoctorsByDoctorsappointmentsID(Long id);
-
-
+    List<AppointmentToDoctors> findByDateGreaterThanEqualAndDoctorId(Date date, Long doctorId);
 }
 

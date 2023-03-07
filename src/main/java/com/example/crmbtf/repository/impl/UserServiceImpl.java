@@ -1,9 +1,7 @@
 package com.example.crmbtf.repository.impl;
 
-import com.example.crmbtf.model.DaySchedule;
-import com.example.crmbtf.model.Role;
-import com.example.crmbtf.model.Status;
-import com.example.crmbtf.model.User;
+import com.example.crmbtf.model.*;
+import com.example.crmbtf.repository.DoctorRepository;
 import com.example.crmbtf.repository.RoleRepository;
 import com.example.crmbtf.repository.UserRepository;
 import com.example.crmbtf.service.UserService;
@@ -23,6 +21,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final DoctorRepository doctorRepository;
     @Autowired
     public BCryptPasswordEncoder passwordEncoder;
     private static final String LOWERCASE_CHARACTERS = "abcdefghijklmnopqrstuvwxyz";
@@ -32,10 +31,11 @@ public class UserServiceImpl implements UserService {
     private static final String ALL_CHARACTERS = LOWERCASE_CHARACTERS + UPPERCASE_CHARACTERS + NUMBERS + SPECIAL_CHARACTERS;
 
 
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository) {
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, DoctorRepository doctorRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
 
+        this.doctorRepository = doctorRepository;
     }
 
     @Bean
@@ -125,7 +125,6 @@ public class UserServiceImpl implements UserService {
         } else
             throw new RuntimeException("user not found");
     }
-
     @Override
     public String randomPassword() {
         int passwordLength = 10;
