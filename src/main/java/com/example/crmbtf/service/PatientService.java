@@ -2,8 +2,7 @@ package com.example.crmbtf.service;
 
 import com.example.crmbtf.model.Patient;
 import com.example.crmbtf.model.PatientCard;
-import com.example.crmbtf.model.dto.PatientDTO;
-import com.example.crmbtf.model.dto.PatientUpdateDTO;
+import com.example.crmbtf.model.dto.PatientDto;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,9 +20,9 @@ public interface PatientService {
     List<Patient> findAll();
     Patient findPatientByPhone(String phone);
     List<Patient> searchPatientsByName(String name);
-    void updateProfile(PatientUpdateDTO patientUpdate);
+    void updateProfile(PatientDto patientDto);
     Patient findPatientByPhoneOrCreatePatient(String phone, Long chatId);
-    List<PatientDTO> getMyProfile();
+    List<Patient> getMyProfile();
 
     Optional<Patient> findById(Long id);
 

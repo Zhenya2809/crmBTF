@@ -1,9 +1,9 @@
-package com.example.crmbtf.model.dto;
+package com.example.crmbtf.model;
 
 import lombok.Data;
 
 @Data
-public class AppointmentDto {
+public class AppointmentForTelegram {
     private Long docId;
     private Long chatId;
     private String date;

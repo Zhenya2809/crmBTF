@@ -1,10 +1,14 @@
 package com.example.crmbtf.model.dto;
 
-
+import com.example.crmbtf.model.Patient;
 import lombok.Data;
 
+
 @Data
-public class PatientUpdateDTO {
+public class PatientDto {
+
+    private String id;
+    private String fio;
 
     private String sex;
 
@@ -14,8 +18,8 @@ public class PatientUpdateDTO {
 
     private String insurancePolicy;
 
+    private String email;
+
     private String phoneNumber;
 
-    private String fio;
-    private String email;
 }

@@ -1,8 +1,9 @@
 package com.example.crmbtf.rest;
 
+import com.example.crmbtf.mapper.ConfigMapper;
 import com.example.crmbtf.model.*;
 import com.example.crmbtf.model.dto.AppointmentToDoctorDTO;
-import com.example.crmbtf.model.dto.DocDto;
+import com.example.crmbtf.model.dto.DoctorDto;
 import com.example.crmbtf.model.dto.TreatmentDto;
 import com.example.crmbtf.repository.DoctorRepository;
 import com.example.crmbtf.service.AppointmentService;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 
 
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -31,24 +31,21 @@ public class DoctorRestControllerV1 {
     private final UserService userService;
     private final DoctorRepository doctorRepository;
     private final TreatmentInformationService treatmentInformationService;
+    private final ConfigMapper configMapper;
 
     @Autowired
-    public DoctorRestControllerV1(AppointmentService appointmentService, UserService userService, DoctorRepository doctorRepository, TreatmentInformationService treatmentInformationService) {
+    public DoctorRestControllerV1(AppointmentService appointmentService, UserService userService, DoctorRepository doctorRepository, TreatmentInformationService treatmentInformationService, ConfigMapper configMapper) {
         this.appointmentService = appointmentService;
         this.userService = userService;
         this.doctorRepository = doctorRepository;
         this.treatmentInformationService = treatmentInformationService;
+        this.configMapper = configMapper;
     }
 
     @GetMapping(value = "appointments")
     public ResponseEntity<List<AppointmentToDoctorDTO>> myProfile() {
         List<AppointmentToDoctors> appointmentForDoctor = appointmentService.findByDateGreaterThanEqual();
-        List<AppointmentToDoctorDTO> appointmentToDoctorDTOList = new ArrayList<>();
-        for (AppointmentToDoctors appointmentToDoctors : appointmentForDoctor) {
-            AppointmentToDoctorDTO appointmentToDoctorDTO = AppointmentToDoctorDTO.fromAppointment(appointmentToDoctors);
-            appointmentToDoctorDTOList.add(appointmentToDoctorDTO);
-        }
-        return ResponseEntity.ok(appointmentToDoctorDTOList);
+        return ResponseEntity.ok(configMapper.toAppointmentToDoctorDtos(appointmentForDoctor));
     }
 
     @PostMapping("updateAppointment")
@@ -64,7 +61,7 @@ public class DoctorRestControllerV1 {
     }
 
     @PostMapping("updateDrInformation")
-    public void updateDoctorInformation(@RequestBody DocDto requestDto) {
+    public void updateDoctorInformation(@RequestBody DoctorDto requestDto) {
         Optional<Doctor> doctorById = doctorRepository.findDoctorById(requestDto.getId());
         if (doctorById.isPresent()) {
             Doctor doctor = doctorById.get();
@@ -74,14 +71,13 @@ public class DoctorRestControllerV1 {
     }
 
     @GetMapping("loadDoctorProfile")
-    public ResponseEntity<DocDto> loadDoctorProfile() {
+    public ResponseEntity<DoctorDto> loadDoctorProfile() {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Optional<Doctor> doctorByUserId = doctorRepository.findDoctorByUserId(userService.findByPhone(auth.getName()).getId());
         if (doctorByUserId.isPresent()) {
             Doctor doctor = doctorByUserId.get();
-            DocDto docDto = DocDto.fromDoctor(doctor);
-            return ResponseEntity.ok(docDto);
+            return ResponseEntity.ok(configMapper.toDoctorDto(doctor));
         }
         throw new RuntimeException("doctor not found");
     }
@@ -94,6 +90,6 @@ public class DoctorRestControllerV1 {
 
     @PostMapping(value = "treatment")
     public void treatment(@RequestBody TreatmentDto requestDto) {
-        treatmentInformationService.editTreatmentInformation(requestDto.getClientID(),requestDto.getDiagnosis(), requestDto.getRecommendations(), requestDto.getSymptoms(), requestDto.getTreatment(),requestDto.getDoctorID());
+        treatmentInformationService.editTreatmentInformation(requestDto.getClientID(), requestDto.getDiagnosis(), requestDto.getRecommendations(), requestDto.getSymptoms(), requestDto.getTreatment(), requestDto.getDoctorID());
     }
 }

@@ -1,10 +1,10 @@
 package com.example.crmbtf.repository.impl;
 
+import com.example.crmbtf.mapper.ConfigMapper;
 import com.example.crmbtf.model.Patient;
 import com.example.crmbtf.model.PatientCard;
 import com.example.crmbtf.model.User;
-import com.example.crmbtf.model.dto.PatientDTO;
-import com.example.crmbtf.model.dto.PatientUpdateDTO;
+import com.example.crmbtf.model.dto.PatientDto;
 import com.example.crmbtf.repository.PatientRepository;
 import com.example.crmbtf.repository.TelegramUsersRepository;
 import com.example.crmbtf.repository.UserRepository;
@@ -30,7 +30,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 public class PatientServiceImpl implements PatientService {
-    private final TelegramUsersRepository telegramUsersRepository;
+
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -38,12 +38,11 @@ public class PatientServiceImpl implements PatientService {
     private final PatientCardServiceImpl patientCardService;
     private final UserRepository userRepository;
 
-    public PatientServiceImpl(PatientRepository patientRepository, PatientCardServiceImpl patientCardService, UserRepository userRepository,
-                              TelegramUsersRepository telegramUsersRepository) {
+
+    public PatientServiceImpl(PatientRepository patientRepository, PatientCardServiceImpl patientCardService, UserRepository userRepository) {
         this.patientRepository = patientRepository;
         this.patientCardService = patientCardService;
         this.userRepository = userRepository;
-        this.telegramUsersRepository = telegramUsersRepository;
     }
 
     @Override
@@ -106,8 +105,9 @@ public class PatientServiceImpl implements PatientService {
         log.info("IN fundPatientByPhone patient not found and created new patient with phone:{}", phone);
         return patient;
     }
+
     @Override
-    public Patient findPatientByPhone(String phone){
+    public Patient findPatientByPhone(String phone) {
         Optional<Patient> byPhone = patientRepository.findPatientByPhoneNumber(phone);
         if (byPhone.isPresent()) {
             log.info("In fundPatientByPhone patient:{} found by phone:{}", byPhone.get(), phone);
@@ -124,8 +124,8 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public List<PatientDTO> getMyProfile() {
-        List<PatientDTO> patientDTOList = new ArrayList<>();
+    public List<Patient> getMyProfile() {
+        List<Patient> patientList = new ArrayList<>();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Optional<User> byUsername = userRepository.findByPhone(auth.getName());
         if (byUsername.isPresent()) {
@@ -134,15 +134,14 @@ public class PatientServiceImpl implements PatientService {
             Optional<Patient> byEmail = patientRepository.findByEmail(email);
             if (byEmail.isPresent()) {
                 Patient patient = byEmail.get();
-                PatientDTO patientDTO = PatientDTO.fromPatient(patient);
-                patientDTOList.add(patientDTO);
+                patientList.add(patient);
             }
         }
-        return patientDTOList;
+        return patientList;
     }
 
     @Override
-    public void updateProfile(PatientUpdateDTO patientUpdate) {
+    public void updateProfile(PatientDto patientUpdate) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Optional<User> byUsername = userRepository.findByPhone(auth.getName());
 
@@ -158,7 +157,6 @@ public class PatientServiceImpl implements PatientService {
                 if (patientUpdate.getBirthday() != null) {
 
                     long currentDateTime = Long.parseLong(patientUpdate.getBirthday());
-                    //creating Date from millisecond
                     Date currentDate = new Date(currentDateTime);
                     DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
                     patient.setBirthday(df.format(currentDate));

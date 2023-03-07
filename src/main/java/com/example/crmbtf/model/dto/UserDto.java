@@ -16,17 +16,6 @@ public class UserDto {
 
     private String password;
 
-    public User toUser() {
-        User user = new User();
-        user.setId(id);
-        user.setPhone(phone);
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-        user.setEmail(email);
-        user.setPassword(password);
-        return user;
-    }
-
     public static UserDto fromUser(User user) {
         UserDto userDto = new UserDto();
         userDto.setId(user.getId());

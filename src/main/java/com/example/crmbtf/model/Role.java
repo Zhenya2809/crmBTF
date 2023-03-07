@@ -11,8 +11,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "t_role")
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Role extends BaseEntity {

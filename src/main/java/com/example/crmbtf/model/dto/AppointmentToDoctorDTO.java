@@ -5,6 +5,8 @@ import lombok.Data;
 
 import java.sql.Date;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class AppointmentToDoctorDTO {
@@ -14,7 +16,6 @@ public class AppointmentToDoctorDTO {
     private String doctorSpeciality;
     private String doctorFirstName;
     private String doctorLastName;
-
     private Long doctorAppointmentsID;
     private Long clientID;
     private Long doctorID;
@@ -33,5 +34,14 @@ public class AppointmentToDoctorDTO {
         appointmentToDoctorDTO.setDoctorID(appointment.getDoctor().getId());
         appointmentToDoctorDTO.setPatientFIO(appointment.getPatient().getFio());
         return appointmentToDoctorDTO;
+    }
+
+    public static List<AppointmentToDoctorDTO> fromAppointmentList(List<AppointmentToDoctors> appointmentToDoctorsList) {
+        List<AppointmentToDoctorDTO> appointmentToDoctorDTOList = new ArrayList<>();
+        for (AppointmentToDoctors appointmentToDoctors : appointmentToDoctorsList) {
+            AppointmentToDoctorDTO appointmentToDoctorDTO = fromAppointment(appointmentToDoctors);
+            appointmentToDoctorDTOList.add(appointmentToDoctorDTO);
+        }
+        return appointmentToDoctorDTOList;
     }
 }

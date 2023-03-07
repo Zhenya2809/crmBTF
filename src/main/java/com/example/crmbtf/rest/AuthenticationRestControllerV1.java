@@ -1,6 +1,7 @@
 package com.example.crmbtf.rest;
 
 import com.example.crmbtf.email.SendEmailTLS;
+import com.example.crmbtf.mapper.ConfigMapper;
 import com.example.crmbtf.model.Role;
 import com.example.crmbtf.model.Status;
 import com.example.crmbtf.model.dto.AuthenticationRequestDto;
@@ -37,14 +38,16 @@ public class AuthenticationRestControllerV1 {
     private final UserService userService;
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final ConfigMapper configMapper;
 
     @Autowired
-    public AuthenticationRestControllerV1(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, UserService userService, UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
+    public AuthenticationRestControllerV1(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, UserService userService, UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, ConfigMapper configMapper) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
         this.userService = userService;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.configMapper = configMapper;
     }
 
     @PostMapping("login")
@@ -106,16 +109,16 @@ public class AuthenticationRestControllerV1 {
         user.setLastName(telegramUser.getLastName());
         user.setStatus(Status.ACTIVE);
         user.setPassword(passwordEncoder.encode(password));
-        UserDto userDto = UserDto.fromUser(user);
+
         Optional<User> byPhone = userRepository.findByPhone(telegramUser.getPhone());
 
         if (byPhone.isPresent()) {
             log.info("user is present");
-            return ResponseEntity.ok(UserDto.fromUser(byPhone.get()));
+            return ResponseEntity.ok(configMapper.toUserDto(byPhone.get()));
         } else {
             userRepository.save(user);
             log.info("account to userPhone: {} created", user.getPhone());
-            return ResponseEntity.ok(userDto);
+            return ResponseEntity.ok(configMapper.toUserDto(user));
         }
     }
 }

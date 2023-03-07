@@ -1,10 +1,8 @@
 package com.example.crmbtf.rest;
 
-import com.example.crmbtf.model.AppointmentToDoctors;
-import com.example.crmbtf.model.Doctor;
-import com.example.crmbtf.model.TreatmentInformation;
+import com.example.crmbtf.mapper.ConfigMapper;
+import com.example.crmbtf.model.*;
 import com.example.crmbtf.model.dto.*;
-import com.example.crmbtf.model.User;
 import com.example.crmbtf.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,38 +20,37 @@ public class UserRestControllerV1 {
     private final DoctorService doctorService;
     private final PatientService patientService;
     private final AppointmentService appointmentService;
+    private final ConfigMapper configMapper;
 
 
     @Autowired
-    public UserRestControllerV1(UserService userService, DoctorService doctorService, PatientService patientService, AppointmentService appointmentService) {
+    public UserRestControllerV1(UserService userService, DoctorService doctorService, PatientService patientService, AppointmentService appointmentService, ConfigMapper configMapper) {
         this.userService = userService;
         this.doctorService = doctorService;
         this.patientService = patientService;
         this.appointmentService = appointmentService;
 
+        this.configMapper = configMapper;
     }
 
     @GetMapping(value = "{id}")
     public ResponseEntity<UserDto> getUserById(@PathVariable(name = "id") Long id) {
         User user = userService.findById(id);
-
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-
-        UserDto result = UserDto.fromUser(user);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        return new ResponseEntity<>(configMapper.toUserDto(user), HttpStatus.OK);
     }
 
 
     @GetMapping(value = "myProfile")
-    public ResponseEntity<List<PatientDTO>> myProfile() {
-        return ResponseEntity.ok(patientService.getMyProfile());
+    public ResponseEntity<List<PatientDto>> myProfile() {
+        return ResponseEntity.ok(configMapper.toPatientDtoList(patientService.getMyProfile()));
     }
 
     @GetMapping(value = "/appointment/{date}/{docId}")
-    public ResponseEntity<List<FreeDateToAppointmentDTO>> getFreeTimeDoctorByDay(@PathVariable(name = "docId") Long docId,
-                                                                                 @PathVariable(name = "date") String date) {
+    public ResponseEntity<List<FreeDateForAppointment>> getFreeTimeDoctorByDay(@PathVariable(name = "docId") Long docId,
+                                                                               @PathVariable(name = "date") String date) {
         String[] split = date.split("-");
         String newDate = "";
         String month = split[1];
@@ -69,26 +66,20 @@ public class UserRestControllerV1 {
 
         HashMap<Date, List<String>> allAvailableTimeByDoctorId = appointmentService.findAllAvailableTimeByDoctorId(docId);
         List<String> freeTimeToAppointmentForDays = userService.freeTimeToAppointmentForDay(LocalDate.parse(newDate), docId, allAvailableTimeByDoctorId);
-        List<FreeDateToAppointmentDTO> freeTimeForDate = new ArrayList<>();
+        List<FreeDateForAppointment> freeTimeForDate = new ArrayList<>();
         for (String time : freeTimeToAppointmentForDays) {
-            FreeDateToAppointmentDTO freeDateToAppointmentDTO = new FreeDateToAppointmentDTO();
-            freeDateToAppointmentDTO.setTime(time);
-            freeTimeForDate.add(freeDateToAppointmentDTO);
+            FreeDateForAppointment freeDateForAppointment = new FreeDateForAppointment();
+            freeDateForAppointment.setTime(time);
+            freeTimeForDate.add(freeDateForAppointment);
         }
-        System.out.println(freeTimeForDate);
+
         return ResponseEntity.ok(freeTimeForDate);
     }
 
     @GetMapping(value = "/choseDoc/{speciality}")
     public ResponseEntity<List<DoctorDto>> choseDoc(@PathVariable(name = "speciality") String speciality) {
         List<Doctor> doctors = doctorService.findDoctorsBySpeciality(speciality);
-        List<DoctorDto> doctorDtoList = new ArrayList<>();
-
-        for (Doctor doctor : doctors) {
-            DoctorDto doctorDto = DoctorDto.fromDoctor(doctor);
-            doctorDtoList.add(doctorDto);
-        }
-        return ResponseEntity.ok(doctorDtoList);
+        return ResponseEntity.ok(configMapper.toDoctorDtos(doctors));
     }
 
     @GetMapping(value = "/getdate/{docId}/{date}/{time}")
@@ -101,31 +92,25 @@ public class UserRestControllerV1 {
 
     @GetMapping(value = "doctors/search")
     public ResponseEntity<List<DoctorDto>> searchAllDoctors() {
-        List<DoctorDto> doctorDtoList = new ArrayList<>();
         List<Doctor> doctors = doctorService.findAll().stream().toList();
-
-        for (Doctor doctor : doctors) {
-            DoctorDto doctorDto = DoctorDto.fromDoctor(doctor);
-            doctorDtoList.add(doctorDto);
-
-        }
-        return ResponseEntity.ok(doctorDtoList);
+        return ResponseEntity.ok(configMapper.toDoctorDtos(doctors));
     }
 
     @PostMapping(value = "update")
-    public void updateDate(@RequestBody PatientUpdateDTO patientUpdate) {
-        patientService.updateProfile(patientUpdate);
+    public void updateDate(@RequestBody PatientDto patientDto) {
+        patientService.updateProfile(patientDto);
     }
 
     @GetMapping(value = "doctors/getSpeciality")
-    public ResponseEntity<List<SpecialityDTO>> getDrSpeciality() {
+    public ResponseEntity<List<Speciality>> getDrSpeciality() {
         Set<String> setSpeciality = doctorService.getDrSpeciality();
+
         List<String> drSpecialityDTO = new ArrayList<>(setSpeciality);
-        List<SpecialityDTO> specDTOlist = new ArrayList<>();
+        List<Speciality> specDTOlist = new ArrayList<>();
         for (String string : drSpecialityDTO) {
-            SpecialityDTO specialityDTO = new SpecialityDTO();
-            specialityDTO.setDocSpeciality(string);
-            specDTOlist.add(specialityDTO);
+            Speciality speciality = new Speciality();
+            speciality.setDocSpeciality(string);
+            specDTOlist.add(speciality);
         }
         return ResponseEntity.ok(specDTOlist);
     }
@@ -133,12 +118,7 @@ public class UserRestControllerV1 {
     @GetMapping(value = "getAppointment")
     public ResponseEntity<List<AppointmentToDoctorDTO>> getAppointmentForUser() {
         List<AppointmentToDoctors> userAppointment = appointmentService.getUserAppointment();
-        List<AppointmentToDoctorDTO> appointmentToDoctorDTOList = new ArrayList<>();
-        for (AppointmentToDoctors appointment : userAppointment) {
-            AppointmentToDoctorDTO appointmentToDoctorDTO1 = AppointmentToDoctorDTO.fromAppointment(appointment);
-            appointmentToDoctorDTOList.add(appointmentToDoctorDTO1);
-        }
-        return ResponseEntity.ok(appointmentToDoctorDTOList);
+        return ResponseEntity.ok(AppointmentToDoctorDTO.fromAppointmentList(userAppointment));
     }
 
 

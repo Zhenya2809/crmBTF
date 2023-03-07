@@ -1,5 +1,6 @@
 package com.example.crmbtf.rest;
 
+import com.example.crmbtf.mapper.ConfigMapper;
 import com.example.crmbtf.model.*;
 import com.example.crmbtf.model.dto.*;
 import com.example.crmbtf.service.*;
@@ -20,42 +21,36 @@ public class TelegramRestControllerV1 {
     private final PatientService patientService;
     private final AppointmentService appointmentService;
     private final TelegramUsersService telegramUsersService;
+    private final ConfigMapper configMapper;
 
     @Autowired
-    public TelegramRestControllerV1(DoctorService doctorService, PatientService patientService, AppointmentService appointmentService, TelegramUsersService telegramUsersService) {
+    public TelegramRestControllerV1(DoctorService doctorService, PatientService patientService, AppointmentService appointmentService, TelegramUsersService telegramUsersService, ConfigMapper configMapper) {
         this.doctorService = doctorService;
 
         this.patientService = patientService;
         this.appointmentService = appointmentService;
         this.telegramUsersService = telegramUsersService;
+        this.configMapper = configMapper;
     }
 
     @GetMapping(value = "/getAppointmentsToDoctor/{chatId}")
     public ResponseEntity<List<AppointmentToDoctorDTO>> getPatientByChatIdAndGetAppointment(@PathVariable(name = "chatId") String chatId) {
 
-        Patient patientByEmail = patientService.findPatientByEmailOrCreatePatient(telegramUsersService.findDataUserByChatId(Long.valueOf(chatId)).get().getEmail(), Long.valueOf(chatId));
-
+        Patient patientByEmail = patientService.findPatientByEmailOrCreatePatient(telegramUsersService.findDataUserByChatId(Long.valueOf(chatId))
+                .get().getEmail(), Long.valueOf(chatId));
         List<AppointmentToDoctors> userAppointment = appointmentService.findAllByPatientId(patientByEmail.getId());
 
-
-        List<AppointmentToDoctorDTO> appointmentToDoctorDTOList = new ArrayList<>();
-
-        for (AppointmentToDoctors appointment : userAppointment) {
-            AppointmentToDoctorDTO appointmentToDoctorDTO1 = AppointmentToDoctorDTO.fromAppointment(appointment);
-            appointmentToDoctorDTOList.add(appointmentToDoctorDTO1);
-        }
-        return ResponseEntity.ok(appointmentToDoctorDTOList);
+        return ResponseEntity.ok(configMapper.toAppointmentToDoctorDtos(userAppointment));
 
 
     }
 
     @GetMapping(value = "/getPatient/{chatId}")
-    public ResponseEntity<PatientDTO> setPatient(@PathVariable(name = "chatId") String chatId) {
-        Patient patientByEmail = patientService.findPatientByEmailOrCreatePatient(telegramUsersService.findDataUserByChatId(Long.valueOf(chatId)).get().getEmail(), Long.valueOf(chatId));
-        PatientDTO patientDTO = PatientDTO.fromPatient(patientByEmail);
-
-
-        return ResponseEntity.ok(patientDTO);
+    public ResponseEntity<PatientDto> setPatient(@PathVariable(name = "chatId") String chatId) {
+        Patient patientByEmail = patientService.findPatientByEmailOrCreatePatient(
+                telegramUsersService.findDataUserByChatId(Long.valueOf(chatId)).get().
+                        getEmail(), Long.valueOf(chatId));
+        return ResponseEntity.ok(configMapper.toPatientDto(patientByEmail));
     }
 
     @GetMapping(value = "/getAllSpeciality")
@@ -67,15 +62,14 @@ public class TelegramRestControllerV1 {
     @GetMapping(value = "/finddoctor/{speciality}")
     public ResponseEntity<List<DoctorDto>> findDoctorBySpeciality(@PathVariable(name = "speciality") String speciality) {
         List<Doctor> doctorsBySpeciality = doctorService.findDoctorsBySpeciality(speciality);
-        List<DoctorDto> doctorDtoList = DoctorDto.fromDoctorList(doctorsBySpeciality);
-        return ResponseEntity.ok(doctorDtoList);
+        return ResponseEntity.ok(configMapper.toDoctorDtos(doctorsBySpeciality));
     }
 
     @GetMapping(value = "/finddoctorBy/{firstName}/{lastName}")
     public ResponseEntity<DoctorDto> findDoctorByFio(@PathVariable(name = "firstName") String firstName,
                                                      @PathVariable(name = "lastName") String lastName) {
         Doctor doctorByFio = doctorService.findDoctorByFio(firstName, lastName);
-        return ResponseEntity.ok(DoctorDto.fromDoctor(doctorByFio));
+        return ResponseEntity.ok(configMapper.toDoctorDto(doctorByFio));
     }
 
     @GetMapping(value = "/findavailabletime/{docId}")
@@ -85,11 +79,11 @@ public class TelegramRestControllerV1 {
     }
 
     @PostMapping(value = "/createAppointment")
-    public ResponseEntity<List<String>> createAppointment(@RequestBody AppointmentDto appointmentDto) {
-        String time = appointmentDto.getTime();
-        String date = appointmentDto.getDate();
-        Long docId = appointmentDto.getDocId();
-        Long chatId = appointmentDto.getChatId();
+    public ResponseEntity<List<String>> createAppointment(@RequestBody AppointmentForTelegram appointmentForTelegram) {
+        String time = appointmentForTelegram.getTime();
+        String date = appointmentForTelegram.getDate();
+        Long docId = appointmentForTelegram.getDocId();
+        Long chatId = appointmentForTelegram.getChatId();
 
         appointmentService.createAppointmentToDoctorsByTelegram(date, time, String.valueOf(docId), chatId);
         return ResponseEntity.ok(null);

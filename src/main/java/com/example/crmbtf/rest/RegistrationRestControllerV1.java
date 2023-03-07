@@ -29,8 +29,8 @@ public class RegistrationRestControllerV1 {
     @PostMapping("registration")
     public ResponseEntity<String> registration(@RequestBody RegistrationRequestDto requestDto) {
 
-        String response = userService.userRegistration(requestDto.getUsername(), requestDto.getPassword(), requestDto.getRePassword(), requestDto.getFirstName(), requestDto.getLastName(), requestDto.getEmail());
-        Patient aNew = patientService.createNew(requestDto.getEmail(), requestDto.getFirstName() + " " + requestDto.getLastName(), requestDto.getUsername());
+        String response = userService.userRegistration(requestDto.getPhone(), requestDto.getPassword(), requestDto.getRePassword(), requestDto.getFirstName(), requestDto.getLastName(), requestDto.getEmail());
+        Patient aNew = patientService.createNew(requestDto.getEmail(), requestDto.getFirstName() + " " + requestDto.getLastName(), requestDto.getPhone());
         PatientCard patientCard = new PatientCard();
         patientCard.setPatient(aNew);
         patientCardService.save(patientCard);

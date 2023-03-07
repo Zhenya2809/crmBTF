@@ -25,10 +25,10 @@ public class Doctor {
     private String lastName;
     @Column(name = "speciality")
     private String speciality;
-    @Column(name = "about")
-    private String about;
     @Column(name="photo")
     private String photo;
+    @Column(name = "about")
+    private String about;
     @Column(name="telegramBotID")
     private String telegramBotID;
 
